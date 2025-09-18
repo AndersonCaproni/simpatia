@@ -1,15 +1,11 @@
 import Button from "../components/button";
-import ChatContainer from "../components/chat-container";
+import ChatContainer from "../components/chat-container/chat-container";
 import Container from "../components/container";
-import SideBar from "../components/side-bar";
+import SideBar from "../components/side-bar/side-bar";
 import TopBar from "../components/top-bar";
 import { useMan } from "../hooks/man-provider";
 
 const Chat = () => {
-
-    const {
-        value
-    } = useMan();
 
     return (
         <Container>
