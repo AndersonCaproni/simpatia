@@ -1,5 +1,6 @@
 import { BookOpen, Calculator, Globe, Robot, Palette, Users, Flask } from "phosphor-react";
 import { createContext, useContext, useState, useRef, useEffect } from "react";
+import { ChatMensagem } from "../services/ia";
 
 const ManContext = createContext();
 
@@ -102,19 +103,6 @@ export const ManProvider = ({ children }) => {
   const textareaRef = useRef(null);
   const scrollRef = useRef(null);
 
-  const generateResponse = (question, agent) => {
-    if (agent.id === "general") {
-      return `Sobre "${question}", eu sugiro considerar metodologias eficazes e estruturadas.`;
-    }
-    if (agent.id === "mathematics") {
-      return `Para "${question}", recomendo aplicar conceitos fundamentais e exemplos práticos.`;
-    }
-    if (agent.id === "humanities") {
-      return `No tema "${question}", é essencial conectar com contexto histórico e cultural.`;
-    }
-    return "Estou aqui para te ajudar!";
-  };
-
   const handleAgentSelect = (agent) => {
     if (agent.messages.length === 0) {
       const welcome = {
@@ -132,62 +120,102 @@ export const ManProvider = ({ children }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!selectedAgent || !inputValue.trim()) return;
 
+    const currentAgent = selectedAgent;
+    const agentId = currentAgent.id;
+
     const userMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       type: "user",
-      content: inputValue,
+      content: inputValue.trim(),
       timestamp: new Date(),
     };
 
-    setSelectedAgent((prev) =>
-      prev ? { ...prev, messages: [...prev.messages, userMessage] } : null
-    );
+    const messagesForApi = [...(currentAgent.messages || []), userMessage];
 
-    setAgents((prev) => {
-      const updatedAgents = prev.map((a) =>
-        a.id === selectedAgent.id
-          ? { ...a, messages: [...a.messages, userMessage] }
-          : a
-      );
-
+    const saveAgentsToCookie = (updatedAgents) => {
       const messagesData = updatedAgents.reduce((acc, agent) => {
         acc[agent.id] = agent.messages;
         return acc;
       }, {});
       setCookie("agentsMessages", JSON.stringify(messagesData));
+    };
 
+    setSelectedAgent((prev) => (prev ? { ...prev, messages: messagesForApi } : prev));
+
+    setAgents((prev) => {
+      const updatedAgents = prev.map((a) =>
+        a.id === agentId ? { ...a, messages: messagesForApi } : a
+      );
+      saveAgentsToCookie(updatedAgents);
       return updatedAgents;
     });
 
     setInputValue("");
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const apiResponse = await ChatMensagem(messagesForApi);
+
+      let botText = "";
+      if (!apiResponse) {
+        botText = "Sem resposta do servidor.";
+      } else if (typeof apiResponse === "string") {
+        botText = apiResponse;
+      } else if (apiResponse.content) {
+        botText = apiResponse.content;
+      } else {
+        botText = JSON.stringify(apiResponse);
+      }
+
       const botResponse = {
-        id: `bot-${Date.now()}`,
+        id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         type: "bot",
-        content: generateResponse(userMessage.content, selectedAgent),
+        content: botText,
         timestamp: new Date(),
       };
 
       setSelectedAgent((prev) =>
-        prev ? { ...prev, messages: [...prev.messages, botResponse] } : null
+        prev ? { ...prev, messages: [...prev.messages, botResponse] } : prev
       );
 
-      setAgents((prev) =>
-        prev.map((a) =>
-          a.id === selectedAgent.id
-            ? { ...a, messages: [...a.messages, botResponse] }
-            : a
-        )
+      setAgents((prev) => {
+        const updatedAgents = prev.map((a) =>
+          a.id === agentId ? { ...a, messages: [...a.messages, botResponse] } : a
+        );
+        saveAgentsToCookie(updatedAgents);
+        return updatedAgents;
+      });
+    } catch (error) {
+      console.error("Erro ao enviar/receber mensagem da IA:", error);
+
+      const errorBotResponse = {
+        id: `bot-error-${Date.now()}`,
+        type: "bot",
+        content:
+          "Desculpe — ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.",
+        timestamp: new Date(),
+      };
+
+      setSelectedAgent((prev) =>
+        prev ? { ...prev, messages: [...prev.messages, errorBotResponse] } : prev
       );
-      autoResize();
+
+      setAgents((prev) => {
+        const updatedAgents = prev.map((a) =>
+          a.id === agentId ? { ...a, messages: [...a.messages, errorBotResponse] } : a
+        );
+        saveAgentsToCookie(updatedAgents);
+        return updatedAgents;
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+      autoResize();
+    }
   };
 
   const autoResize = () => {

@@ -1,6 +1,8 @@
 import { PaperPlaneRight, CircleNotch, User, Robot } from "phosphor-react";
 import { useMan } from "../../hooks/man-provider";
 import styles from './chat-container.module.css'
+import { formatDate } from "../../utils/format-date";
+import TypingMessage from "../typing-message";
 
 const ChatContainer = () => {
   const {
@@ -45,13 +47,15 @@ const ChatContainer = () => {
                   <div style={{ minHeight: '20px', minWidth: '20px' }}>
                     {MessageIcon && <MessageIcon size={16} />}
                   </div>
-                  <span>{msg.content}</span>
-                  <small>
-                    {msg.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </small>
+                  {msg.type === "bot" &&
+                    selectedAgent?.messages[selectedAgent.messages.length - 1].id === msg.id &&
+                    Date.now() - new Date(msg.timestamp).getTime() <= 5000 ? (
+                    <TypingMessage content={msg.content} />
+                  ) : (
+                   <>{msg.content}</> 
+                  )}
+
+                  <small>{formatDate(msg.timestamp)}</small>
                 </div>
               );
             })}
@@ -71,6 +75,14 @@ const ChatContainer = () => {
               onChange={(e) => {
                 setInputValue(e.target.value);
                 autoResize();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!isLoading && inputValue.trim()) {
+                    handleSubmit(e);
+                  }
+                }
               }}
               placeholder={`Converse com ${selectedAgent.name}...`}
               rows={1}
@@ -92,6 +104,7 @@ const ChatContainer = () => {
                 wordBreak: "break-word",
               }}
             />
+
             <button type="submit" disabled={isLoading || !inputValue.trim()}>
               {isLoading ? (
                 <CircleNotch size={20} className={styles.spin} />
@@ -103,7 +116,7 @@ const ChatContainer = () => {
         </>
       ) : (
         <div className={styles.emptyChat}>
-          <Robot size={40}/>
+          <Robot size={40} />
           <p>Selecione um agente para começar</p>
         </div>
       )}
