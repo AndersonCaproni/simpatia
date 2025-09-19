@@ -16,8 +16,16 @@
      border-bottom: 1px solid #ddd;
      display: flex;
      align-items: center;
-     gap: 8px;
+     justify-content: space-between;
      width: 100%;
+     box-sizing: border-box;
+ }
+
+ .chatHeaderTitle {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     width: auto;
      box-sizing: border-box;
  }
 
@@ -60,7 +68,6 @@
      min-width: 70px;
      margin-bottom: 12px;
      padding: 8px 12px;
-     border-radius: 8px;
      display: inline-flex;
      align-items: center;
      gap: 6px;
@@ -78,10 +85,12 @@
 
  .messageuser {
      margin-left: auto;
+     border-radius: 8px 8px 0px 8px;
  }
 
  .messagebot {
      margin-right: auto;
+     border-radius: 8px 8px 8px 0px;
  }
 
  .inputArea {
@@ -95,15 +104,15 @@
      position: relative;
  }
 
-.inputArea::after {
-    content: "";
-    position: absolute;
-    top: -35px;
-    left: 0;
-    width: 100%;
-    height: 35px;
-    background: linear-gradient(to top, #FEFEFF, rgba(254, 254, 255, 0));
-}
+ .inputArea::after {
+     content: "";
+     position: absolute;
+     top: -35px;
+     left: 0;
+     width: 100%;
+     height: 35px;
+     background: linear-gradient(to top, #FEFEFF, rgba(254, 254, 255, 0));
+ }
 
  textarea::-webkit-scrollbar {
      width: 4px;
@@ -122,7 +131,7 @@
  .inputArea button {
      margin-left: 8px;
      border: none;
-     background: #370199;
+     background: #006FFF;
      color: #fff;
      border-radius: 6px;
      width: 40px;
@@ -152,7 +161,32 @@
      animation: spin 1s linear infinite;
  }
 
+ .spinTop {
+     animation: spinTop 1s linear infinite reverse;
+ }
+
+ .buttonTop{
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background-color: #003785;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+ }
+
  @keyframes spin {
+     from {
+         transform: rotate(0);
+     }
+
+     to {
+         transform: rotate(360deg);
+     }
+ }
+
+  @keyframes spinTop {
      from {
          transform: rotate(0);
      }

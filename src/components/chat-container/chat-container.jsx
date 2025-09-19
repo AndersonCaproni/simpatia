@@ -1,8 +1,9 @@
-import { PaperPlaneRight, CircleNotch, User, Robot } from "phosphor-react";
+import { PaperPlaneRight, CircleNotch, User, Robot, ArrowsCounterClockwise } from "phosphor-react";
 import { useMan } from "../../hooks/man-provider";
 import styles from './chat-container.module.css'
 import { formatDate } from "../../utils/format-date";
 import TypingMessage from "../typing-message";
+import { useState } from "react";
 
 const ChatContainer = () => {
   const {
@@ -13,7 +14,9 @@ const ChatContainer = () => {
     textareaRef,
     inputValue,
     setInputValue,
-    autoResize
+    autoResize,
+    reload,
+    limparCookie
   } = useMan();
 
   // Proteção para o ícone
@@ -24,11 +27,20 @@ const ChatContainer = () => {
       {selectedAgent ? (
         <>
           <header className={styles.chatHeader}>
-            {Icon && <Icon size={20} color={selectedAgent.color} />}
-            <div>
-              <strong>{selectedAgent.name}</strong>
-              <p>{selectedAgent.description}</p>
+            <div className={styles.chatHeaderTitle}>
+              {Icon && <Icon size={20} color={selectedAgent.color} />}
+              <div>
+                <strong>{selectedAgent.name}</strong>
+                <p>{selectedAgent.description}</p>
+              </div>
             </div>
+            <button className={styles.buttonTop} onClick={limparCookie}>
+              <ArrowsCounterClockwise
+                size={20}
+                color="white"
+                className={reload ? styles.spinTop : ""}
+              />
+            </button>
           </header>
 
           <div className={styles.messages} ref={scrollRef}>
@@ -52,7 +64,7 @@ const ChatContainer = () => {
                     Date.now() - new Date(msg.timestamp).getTime() <= 5000 ? (
                     <TypingMessage content={msg.content} />
                   ) : (
-                   <>{msg.content}</> 
+                    <>{msg.content}</>
                   )}
 
                   <small>{formatDate(msg.timestamp)}</small>

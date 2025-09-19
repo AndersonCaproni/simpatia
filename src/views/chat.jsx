@@ -1,3 +1,4 @@
+import { CaretDown } from "phosphor-react";
 import Button from "../components/button";
 import ChatContainer from "../components/chat-container/chat-container";
 import Container from "../components/container";
@@ -14,6 +15,7 @@ const Chat = () => {
                     types="outline"
                 >
                     Módulos de IA
+                    <CaretDown color="#006FFF"/> 
                 </Button>
                 <Button
                     types="outline"

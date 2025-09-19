@@ -1,4 +1,4 @@
-import { BookOpen, Calculator, Globe, Robot, Palette, Users, Flask } from "phosphor-react";
+import { BookOpen, Calculator, Globe, Robot, Palette, Users, Flask, ComputerTower, Laptop } from "phosphor-react";
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { ChatMensagem } from "../services/ia";
 
@@ -27,7 +27,7 @@ export const ManProvider = ({ children }) => {
       description: "Especialista em educação geral e metodologias de ensino",
       presentation:
         "Olá, eu sou o Assistente Geral, Especialista em educação geral e metodologias de ensino. Estou pronto para te ajudar com suas dúvidas, o que precisa?",
-      color: "#6C63FF",
+      color: "#0051C2",
       specialties: ["Metodologias", "Planejamento", "Avaliação"],
       messages: [],
     },
@@ -96,12 +96,54 @@ export const ManProvider = ({ children }) => {
       color: "#F97316",
       specialties: ["Sociologia", "Psicologia", "Administração", "Direito"],
       messages: [],
+    },    {
+      id: "computer",
+      name: "Computação",
+      icon: Laptop,
+      description: "Especialista em computação e em desenvolvimento de software",
+      presentation:
+        "Olá, eu sou o Assistente de Computação, Especialista em computação e em desenvolvimento de software. Estou pronto para te ajudar com suas dúvidas, o que precisa?",
+      color: "#0051C2",
+      specialties: ["Inteligência Artificial", "Desenvolvimento", "TI"],
+      messages: [],
     },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
   const scrollRef = useRef(null);
+  const [reload, setReload] = useState(false)
+
+const limparCookie = () => {
+  if (!selectedAgent) return;
+  setReload(true);
+
+  setTimeout(() => {
+    setAgents((prev) =>
+      prev.map((a) =>
+        a.id === selectedAgent.id ? { ...a, messages: [] } : a
+      )
+    );
+
+    setSelectedAgent((prev) =>
+      prev ? { ...prev, messages: [] } : prev
+    );
+
+    const savedMessages = getCookie("agentsMessages");
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        parsed[selectedAgent.id] = [];
+        setCookie("agentsMessages", JSON.stringify(parsed));
+      } catch (e) {
+        console.error("Erro ao limpar cache do agente:", e);
+      }
+    }
+
+    setReload(false);
+  }, 2000);
+};
+
 
   const handleAgentSelect = (agent) => {
     if (agent.messages.length === 0) {
@@ -142,6 +184,7 @@ export const ManProvider = ({ children }) => {
         acc[agent.id] = agent.messages;
         return acc;
       }, {});
+      console.log("Setou")
       setCookie("agentsMessages", JSON.stringify(messagesData));
     };
 
@@ -159,7 +202,7 @@ export const ManProvider = ({ children }) => {
     setIsLoading(true);
 
     try {
-      const apiResponse = await ChatMensagem(messagesForApi);
+      const apiResponse = await ChatMensagem(messagesForApi, selectedAgent?.specialties);
 
       let botText = "";
       if (!apiResponse) {
@@ -281,6 +324,9 @@ export const ManProvider = ({ children }) => {
         autoResize,
         inputValue,
         setInputValue,
+        reload,
+        setReload,
+        limparCookie
       }}
     >
       {children}

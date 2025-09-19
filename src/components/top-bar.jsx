@@ -14,15 +14,23 @@ const TopBar = ({ children }) => {
                 justifyContent: 'space-around',
             }}
         >
-            <img src={Logo} alt="Logo" style={{ height: '50%' }} />
-            <div
-            style={{
-                display: 'flex',
-                gap: '56px',
-                alignItems: 'center',
-                justifyContent: 'center',
+            <img
+                src={Logo}
+                alt="Logo"
+                style={{
+                    height: "50%",
+                    filter: "drop-shadow(0px 4px 2px rgba(0,0,0,0.5))"
+                }}
+            />
 
-            }}
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '56px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+
+                }}
             >
                 {children}
             </div>
