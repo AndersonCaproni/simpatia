@@ -1,9 +1,14 @@
-import { PaperPlaneRight, CircleNotch, User, Robot, ArrowsCounterClockwise } from "phosphor-react";
+import {
+  ArrowsCounterClockwise,
+  CircleNotch,
+  PaperPlaneRight,
+  Robot,
+  User,
+} from "phosphor-react";
 import { useMan } from "../../hooks/man-provider";
-import styles from './chat-container.module.css'
 import { formatDate } from "../../utils/format-date";
 import TypingMessage from "../typing-message";
-import { useState } from "react";
+import styles from "./chat-container.module.css";
 
 const ChatContainer = () => {
   const {
@@ -16,7 +21,7 @@ const ChatContainer = () => {
     setInputValue,
     autoResize,
     reload,
-    limparCookie
+    limparCookie,
   } = useMan();
 
   // Proteção para o ícone
@@ -49,19 +54,22 @@ const ChatContainer = () => {
               return (
                 <div
                   key={msg.id}
-                  className={`${styles.message} ${styles[`message${msg.type}`]}`}
+                  className={`${styles.message} ${
+                    styles[`message${msg.type}`]
+                  }`}
                   style={{
                     backgroundColor:
                       msg.type === "bot" ? "#f0f0f0" : selectedAgent.color,
                     color: msg.type === "bot" ? "#000" : "#fff",
                   }}
                 >
-                  <div style={{ minHeight: '20px', minWidth: '20px' }}>
+                  <div style={{ minHeight: "20px", minWidth: "20px" }}>
                     {MessageIcon && <MessageIcon size={16} />}
                   </div>
                   {msg.type === "bot" &&
-                    selectedAgent?.messages[selectedAgent.messages.length - 1].id === msg.id &&
-                    Date.now() - new Date(msg.timestamp).getTime() <= 5000 ? (
+                  selectedAgent?.messages[selectedAgent.messages.length - 1]
+                    .id === msg.id &&
+                  Date.now() - new Date(msg.timestamp).getTime() <= 5000 ? (
                     <TypingMessage content={msg.content} />
                   ) : (
                     <>{msg.content}</>
@@ -116,7 +124,6 @@ const ChatContainer = () => {
                 wordBreak: "break-word",
               }}
             />
-
             <button type="submit" disabled={isLoading || !inputValue.trim()}>
               {isLoading ? (
                 <CircleNotch size={20} className={styles.spin} />

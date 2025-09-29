@@ -4,37 +4,41 @@ export async function ChatMensagem(pergunta, specialties) {
   try {
     console.log("Pergunta enviada:", pergunta);
 
-    const data = `${JSON.stringify(pergunta)} - RESPONDA SEMPRE MINHA ÚLTIMA PERGUNTA, PORÉM LEVE EM CONTA TODAS AS OUTRAS PERGUNTAS E RESPOSTA QUE EXISTEM NA LISTA. VOCÊ DEVE SER UM AGENTE DE IA TREINADO EM ${specialties}, NÃO PODE SAIR DO SEU TEMA. É EXTREMAMENTE PROIBIO VOCÊ DAR A RESPOSTA PARA O ALUNO, VOCÊ DEVE EXPLICAR COM O ALUNOS CHEGA NO SEU OBJETIVO, SEJA CORTEZ.`;
+    const data = `${JSON.stringify(
+      pergunta
+    )} - RESPONDA SEMPRE MINHA ÚLTIMA PERGUNTA, PORÉM LEVE EM CONTA TODAS AS OUTRAS PERGUNTAS E RESPOSTA QUE EXISTEM NA LISTA. VOCÊ DEVE SER UM AGENTE DE IA TREINADO EM ${specialties}, NÃO PODE SAIR DO SEU TEMA. É EXTREMAMENTE PROIBIDO VOCÊ DAR A RESPOSTA PARA O ALUNO, VOCÊ DEVE EXPLICAR COMO O ALUNO CHEGA NO SEU OBJETIVO, SEJA CORTEZ.`;
 
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
       {
-        model: "meta-llama/llama-3-70b-instruct",
-        messages: [
+        contents: [
           {
             role: "user",
-            content: data,
+            parts: [{ text: data }],
           },
         ],
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
+          "x-goog-api-key": process.env.REACT_APP_GEMINI_API_KEY,
         },
       }
     );
 
-    if (!response.data || !response.data.choices?.[0]?.message?.content) {
-      throw new Error("Resposta inválida da API OpenRouter");
+    if (
+      !response.data ||
+      !response.data.candidates?.[0]?.content?.parts?.[0]?.text
+    ) {
+      throw new Error("Resposta inválida da API Gemini");
     }
 
-    const respostaTexto = response.data.choices[0].message.content;
+    const respostaTexto = response.data.candidates[0].content.parts[0].text;
 
-    console.log("✅ Resposta recebida da IA");
+    console.log("✅ Resposta recebida da IA Gemini");
     return respostaTexto;
   } catch (erro) {
-    console.error("❌ Erro ao consultar LLaMA:", erro);
+    console.error("❌ Erro ao consultar Gemini:", erro);
     return "Houve um erro ao consultar a IA. Tente novamente em instantes.";
   }
 }

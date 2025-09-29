@@ -21,6 +21,25 @@ const StyledButton = styled.button`
       transform: scale(1.005);
       box-shadow: 0px 4px 14px rgba(76, 75, 103, 0.2);
     }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      font-size: 16px;
+      padding: 12px 18px;
+      gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+      padding: 8px 14px;
+      gap: 8px;
+    }
+
+    @media (max-width: 350px) {
+      font-size: 12px;
+      padding: 6px 10px;
+      gap: 6px;
+    }
   `
       : $types === "outline"
       ? `
@@ -38,6 +57,25 @@ const StyledButton = styled.button`
       background-color: #F8F8FC;
       transform: scale(1.005);
       box-shadow: 0px 4px 14px rgba(76, 75, 103, 0.2);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      font-size: 14px;
+      padding: 12px 18px;
+      gap: 6px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+      padding: 8px 14px;
+      gap: 4px;
+    }
+
+    @media (max-width: 350px) {
+      font-size: 11px;
+      padding: 6px 10px;
+      gap: 3px;
     }
   `
       : ``}

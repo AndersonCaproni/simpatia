@@ -1,18 +1,30 @@
-import { BookOpen, Calculator, Globe, Robot, Palette, Users, Flask, ComputerTower, Laptop } from "phosphor-react";
-import { createContext, useContext, useState, useRef, useEffect } from "react";
+import {
+  BookOpen,
+  Calculator,
+  Flask,
+  Globe,
+  Laptop,
+  Palette,
+  Robot,
+  Users,
+} from "phosphor-react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "../services/ia";
 
 const ManContext = createContext();
 
 const setCookie = (name, value, days = 7) => {
   const expires = new Date(Date.now() + days * 86400000).toUTCString();
-  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )}; expires=${expires}; path=/`;
 };
 
 const getCookie = (name) => {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
+  if (parts.length === 2)
+    return decodeURIComponent(parts.pop().split(";").shift());
   return null;
 };
 
@@ -35,7 +47,8 @@ export const ManProvider = ({ children }) => {
       id: "humanities",
       name: "Humanidades",
       icon: BookOpen,
-      description: "Especialista em História, Literatura, Filosofia e áreas correlatas",
+      description:
+        "Especialista em História, Literatura, Filosofia e áreas correlatas",
       presentation:
         "Olá, eu sou o Assistente de Humanidades, Especialista em História, Literatura, Filosofia e áreas correlatas. Estou pronto para te ajudar com suas dúvidas, o que precisa?",
       color: "#F59E0B",
@@ -90,17 +103,20 @@ export const ManProvider = ({ children }) => {
       id: "social",
       name: "Sociais",
       icon: Users,
-      description: "Especialista em Sociologia, Psicologia, Administração e Direito",
+      description:
+        "Especialista em Sociologia, Psicologia, Administração e Direito",
       presentation:
         "Olá, eu sou o Assistente de Sociais, Especialista em Sociologia, Psicologia, Administração e Direito. Estou pronto para te ajudar com suas dúvidas, o que precisa?",
       color: "#F97316",
       specialties: ["Sociologia", "Psicologia", "Administração", "Direito"],
       messages: [],
-    },    {
+    },
+    {
       id: "computer",
       name: "Computação",
       icon: Laptop,
-      description: "Especialista em computação e em desenvolvimento de software",
+      description:
+        "Especialista em computação e em desenvolvimento de software",
       presentation:
         "Olá, eu sou o Assistente de Computação, Especialista em computação e em desenvolvimento de software. Estou pronto para te ajudar com suas dúvidas, o que precisa?",
       color: "#0051C2",
@@ -112,38 +128,35 @@ export const ManProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
   const scrollRef = useRef(null);
-  const [reload, setReload] = useState(false)
+  const [reload, setReload] = useState(false);
 
-const limparCookie = () => {
-  if (!selectedAgent) return;
-  setReload(true);
+  const limparCookie = () => {
+    if (!selectedAgent) return;
+    setReload(true);
 
-  setTimeout(() => {
-    setAgents((prev) =>
-      prev.map((a) =>
-        a.id === selectedAgent.id ? { ...a, messages: [] } : a
-      )
-    );
+    setTimeout(() => {
+      setAgents((prev) =>
+        prev.map((a) =>
+          a.id === selectedAgent.id ? { ...a, messages: [] } : a
+        )
+      );
 
-    setSelectedAgent((prev) =>
-      prev ? { ...prev, messages: [] } : prev
-    );
+      setSelectedAgent((prev) => (prev ? { ...prev, messages: [] } : prev));
 
-    const savedMessages = getCookie("agentsMessages");
-    if (savedMessages) {
-      try {
-        const parsed = JSON.parse(savedMessages);
-        parsed[selectedAgent.id] = [];
-        setCookie("agentsMessages", JSON.stringify(parsed));
-      } catch (e) {
-        console.error("Erro ao limpar cache do agente:", e);
+      const savedMessages = getCookie("agentsMessages");
+      if (savedMessages) {
+        try {
+          const parsed = JSON.parse(savedMessages);
+          parsed[selectedAgent.id] = [];
+          setCookie("agentsMessages", JSON.stringify(parsed));
+        } catch (e) {
+          console.error("Erro ao limpar cache do agente:", e);
+        }
       }
-    }
 
-    setReload(false);
-  }, 2000);
-};
-
+      setReload(false);
+    }, 2000);
+  };
 
   const handleAgentSelect = (agent) => {
     if (agent.messages.length === 0) {
@@ -167,9 +180,9 @@ const limparCookie = () => {
     if (isLoading) return;
     if (!selectedAgent || !inputValue.trim()) return;
 
-    const currentAgent = selectedAgent;
-    const agentId = currentAgent.id;
+    const agentId = selectedAgent.id;
 
+    // Mensagem do usuário
     const userMessage = {
       id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       type: "user",
@@ -177,43 +190,39 @@ const limparCookie = () => {
       timestamp: new Date(),
     };
 
-    const messagesForApi = [...(currentAgent.messages || []), userMessage];
-
-    const saveAgentsToCookie = (updatedAgents) => {
-      const messagesData = updatedAgents.reduce((acc, agent) => {
-        acc[agent.id] = agent.messages;
-        return acc;
-      }, {});
-      console.log("Setou")
-      setCookie("agentsMessages", JSON.stringify(messagesData));
-    };
-
-    setSelectedAgent((prev) => (prev ? { ...prev, messages: messagesForApi } : prev));
-
+    // Atualiza agentes + cookie já com a mensagem do usuário
     setAgents((prev) => {
-      const updatedAgents = prev.map((a) =>
-        a.id === agentId ? { ...a, messages: messagesForApi } : a
+      const updated = prev.map((a) =>
+        a.id === agentId ? { ...a, messages: [...a.messages, userMessage] } : a
       );
-      saveAgentsToCookie(updatedAgents);
-      return updatedAgents;
+      setCookie(
+        "agentsMessages",
+        JSON.stringify(
+          updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
+        )
+      );
+      return updated;
     });
+
+    // Atualiza selectedAgent sincronizado
+    setSelectedAgent((prev) =>
+      prev ? { ...prev, messages: [...prev.messages, userMessage] } : prev
+    );
 
     setInputValue("");
     setIsLoading(true);
 
     try {
-      const apiResponse = await ChatMensagem(messagesForApi, selectedAgent?.specialties);
+      const apiResponse = await ChatMensagem(
+        [...selectedAgent.messages, userMessage],
+        selectedAgent.specialties
+      );
 
       let botText = "";
-      if (!apiResponse) {
-        botText = "Sem resposta do servidor.";
-      } else if (typeof apiResponse === "string") {
-        botText = apiResponse;
-      } else if (apiResponse.content) {
-        botText = apiResponse.content;
-      } else {
-        botText = JSON.stringify(apiResponse);
-      }
+      if (!apiResponse) botText = "Sem resposta do servidor.";
+      else if (typeof apiResponse === "string") botText = apiResponse;
+      else if (apiResponse.content) botText = apiResponse.content;
+      else botText = JSON.stringify(apiResponse);
 
       const botResponse = {
         id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -222,20 +231,28 @@ const limparCookie = () => {
         timestamp: new Date(),
       };
 
+      // Atualiza agentes + cookie já com a resposta do bot
+      setAgents((prev) => {
+        const updated = prev.map((a) =>
+          a.id === agentId
+            ? { ...a, messages: [...a.messages, botResponse] }
+            : a
+        );
+        setCookie(
+          "agentsMessages",
+          JSON.stringify(
+            updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
+          )
+        );
+        return updated;
+      });
+
+      // Atualiza selectedAgent sincronizado
       setSelectedAgent((prev) =>
         prev ? { ...prev, messages: [...prev.messages, botResponse] } : prev
       );
-
-      setAgents((prev) => {
-        const updatedAgents = prev.map((a) =>
-          a.id === agentId ? { ...a, messages: [...a.messages, botResponse] } : a
-        );
-        saveAgentsToCookie(updatedAgents);
-        return updatedAgents;
-      });
     } catch (error) {
       console.error("Erro ao enviar/receber mensagem da IA:", error);
-
       const errorBotResponse = {
         id: `bot-error-${Date.now()}`,
         type: "bot",
@@ -244,17 +261,26 @@ const limparCookie = () => {
         timestamp: new Date(),
       };
 
-      setSelectedAgent((prev) =>
-        prev ? { ...prev, messages: [...prev.messages, errorBotResponse] } : prev
-      );
-
       setAgents((prev) => {
-        const updatedAgents = prev.map((a) =>
-          a.id === agentId ? { ...a, messages: [...a.messages, errorBotResponse] } : a
+        const updated = prev.map((a) =>
+          a.id === agentId
+            ? { ...a, messages: [...a.messages, errorBotResponse] }
+            : a
         );
-        saveAgentsToCookie(updatedAgents);
-        return updatedAgents;
+        setCookie(
+          "agentsMessages",
+          JSON.stringify(
+            updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
+          )
+        );
+        return updated;
       });
+
+      setSelectedAgent((prev) =>
+        prev
+          ? { ...prev, messages: [...prev.messages, errorBotResponse] }
+          : prev
+      );
     } finally {
       setIsLoading(false);
       autoResize();
@@ -326,7 +352,7 @@ const limparCookie = () => {
         setInputValue,
         reload,
         setReload,
-        limparCookie
+        limparCookie,
       }}
     >
       {children}
