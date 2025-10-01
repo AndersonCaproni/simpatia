@@ -35,10 +35,10 @@ export async function ChatMensagem(pergunta, specialties) {
 
     const respostaTexto = response.data.candidates[0].content.parts[0].text;
 
-    console.log("✅ Resposta recebida da IA Gemini");
+    console.log("Resposta recebida da IA Gemini");
     return respostaTexto;
   } catch (erro) {
-    console.error("❌ Erro ao consultar Gemini:", erro);
+    console.error("Erro ao consultar Gemini:", erro);
     return "Houve um erro ao consultar a IA. Tente novamente em instantes.";
   }
 }

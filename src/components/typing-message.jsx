@@ -19,11 +19,7 @@ function TypingMessage({ content, speed = 15, onFinish }) {
     return () => clearInterval(interval);
   }, [content, speed, onFinish]);
 
-  return (
-    <>
-      {displayedText}
-    </>
-  );
+  return <>{displayedText}</>;
 }
 
 export default TypingMessage;

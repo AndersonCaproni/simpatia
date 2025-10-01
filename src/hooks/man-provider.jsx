@@ -13,19 +13,23 @@ import { ChatMensagem } from "../services/ia";
 
 const ManContext = createContext();
 
-const setCookie = (name, value, days = 7) => {
-  const expires = new Date(Date.now() + days * 86400000).toUTCString();
-  document.cookie = `${name}=${encodeURIComponent(
-    value
-  )}; expires=${expires}; path=/`;
+// Agora usando localStorage no lugar de cookies
+const setStorage = (name, value) => {
+  try {
+    localStorage.setItem(name, JSON.stringify(value));
+  } catch (e) {
+    console.error("Erro ao salvar no localStorage:", e);
+  }
 };
 
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2)
-    return decodeURIComponent(parts.pop().split(";").shift());
-  return null;
+const getStorage = (name) => {
+  try {
+    const value = localStorage.getItem(name);
+    return value ? JSON.parse(value) : null;
+  } catch (e) {
+    console.error("Erro ao ler do localStorage:", e);
+    return null;
+  }
 };
 
 export const ManProvider = ({ children }) => {
@@ -130,7 +134,7 @@ export const ManProvider = ({ children }) => {
   const scrollRef = useRef(null);
   const [reload, setReload] = useState(false);
 
-  const limparCookie = () => {
+  const limparStorage = () => {
     if (!selectedAgent) return;
     setReload(true);
 
@@ -143,12 +147,11 @@ export const ManProvider = ({ children }) => {
 
       setSelectedAgent((prev) => (prev ? { ...prev, messages: [] } : prev));
 
-      const savedMessages = getCookie("agentsMessages");
+      const savedMessages = getStorage("agentsMessages");
       if (savedMessages) {
         try {
-          const parsed = JSON.parse(savedMessages);
-          parsed[selectedAgent.id] = [];
-          setCookie("agentsMessages", JSON.stringify(parsed));
+          savedMessages[selectedAgent.id] = [];
+          setStorage("agentsMessages", savedMessages);
         } catch (e) {
           console.error("Erro ao limpar cache do agente:", e);
         }
@@ -182,7 +185,6 @@ export const ManProvider = ({ children }) => {
 
     const agentId = selectedAgent.id;
 
-    // Mensagem do usuário
     const userMessage = {
       id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       type: "user",
@@ -190,21 +192,17 @@ export const ManProvider = ({ children }) => {
       timestamp: new Date(),
     };
 
-    // Atualiza agentes + cookie já com a mensagem do usuário
     setAgents((prev) => {
       const updated = prev.map((a) =>
         a.id === agentId ? { ...a, messages: [...a.messages, userMessage] } : a
       );
-      setCookie(
+      setStorage(
         "agentsMessages",
-        JSON.stringify(
-          updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
-        )
+        updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
       );
       return updated;
     });
 
-    // Atualiza selectedAgent sincronizado
     setSelectedAgent((prev) =>
       prev ? { ...prev, messages: [...prev.messages, userMessage] } : prev
     );
@@ -231,23 +229,19 @@ export const ManProvider = ({ children }) => {
         timestamp: new Date(),
       };
 
-      // Atualiza agentes + cookie já com a resposta do bot
       setAgents((prev) => {
         const updated = prev.map((a) =>
           a.id === agentId
             ? { ...a, messages: [...a.messages, botResponse] }
             : a
         );
-        setCookie(
+        setStorage(
           "agentsMessages",
-          JSON.stringify(
-            updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
-          )
+          updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
         );
         return updated;
       });
 
-      // Atualiza selectedAgent sincronizado
       setSelectedAgent((prev) =>
         prev ? { ...prev, messages: [...prev.messages, botResponse] } : prev
       );
@@ -267,11 +261,9 @@ export const ManProvider = ({ children }) => {
             ? { ...a, messages: [...a.messages, errorBotResponse] }
             : a
         );
-        setCookie(
+        setStorage(
           "agentsMessages",
-          JSON.stringify(
-            updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
-          )
+          updated.reduce((acc, a) => ({ ...acc, [a.id]: a.messages }), {})
         );
         return updated;
       });
@@ -308,21 +300,20 @@ export const ManProvider = ({ children }) => {
 
   useEffect(() => {
     autoResize();
-    const savedMessages = getCookie("agentsMessages");
+    const savedMessages = getStorage("agentsMessages");
     if (savedMessages) {
       try {
-        const parsed = JSON.parse(savedMessages);
         setAgents((prev) =>
           prev.map((agent) => ({
             ...agent,
-            messages: (parsed[agent.id] || []).map((msg) => ({
+            messages: (savedMessages[agent.id] || []).map((msg) => ({
               ...msg,
               timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date(),
             })),
           }))
         );
       } catch (e) {
-        console.error("Erro ao parsear mensagens do cookie:", e);
+        console.error("Erro ao parsear mensagens do localStorage:", e);
       }
     }
   }, []);
@@ -332,7 +323,7 @@ export const ManProvider = ({ children }) => {
       acc[agent.id] = agent.messages;
       return acc;
     }, {});
-    setCookie("agentsMessages", JSON.stringify(messagesData));
+    setStorage("agentsMessages", messagesData);
   }, [agents]);
 
   return (
@@ -352,7 +343,7 @@ export const ManProvider = ({ children }) => {
         setInputValue,
         reload,
         setReload,
-        limparCookie,
+        limparStorage,
       }}
     >
       {children}

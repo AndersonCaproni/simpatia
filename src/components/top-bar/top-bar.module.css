@@ -34,7 +34,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .topbar {
     flex-direction: column;
     height: auto;

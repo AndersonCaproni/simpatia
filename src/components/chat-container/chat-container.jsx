@@ -122,6 +122,7 @@ const ChatContainer = () => {
                 boxSizing: "border-box",
                 overflowWrap: "break-word",
                 wordBreak: "break-word",
+                whiteSpace: "pre-wrap",
               }}
             />
             <button type="submit" disabled={isLoading || !inputValue.trim()}>
