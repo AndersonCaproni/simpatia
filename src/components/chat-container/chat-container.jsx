@@ -21,7 +21,7 @@ const ChatContainer = () => {
     setInputValue,
     autoResize,
     reload,
-    limparCookie,
+    limparStorage,
   } = useMan();
 
   // Proteção para o ícone
@@ -39,7 +39,7 @@ const ChatContainer = () => {
                 <p>{selectedAgent.description}</p>
               </div>
             </div>
-            <button className={styles.buttonTop} onClick={limparCookie}>
+            <button className={styles.buttonTop} onClick={limparStorage}>
               <ArrowsCounterClockwise
                 size={20}
                 color="white"
