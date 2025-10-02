@@ -146,19 +146,26 @@ export const ManProvider = ({ children }) => {
     if (!selectedAgent) return;
     setReload(true);
 
+    const welcome = {
+        id: `bot-${Date.now()}`,
+        type: "bot",
+        content: selectedAgent?.presentation,
+        timestamp: new Date(),
+      };
+
     setTimeout(() => {
       setAgents((prev) =>
         prev.map((a) =>
-          a.id === selectedAgent.id ? { ...a, messages: [] } : a
+          a.id === selectedAgent.id ? { ...a, messages: [welcome] } : a
         )
       );
 
-      setSelectedAgent((prev) => (prev ? { ...prev, messages: [] } : prev));
+      setSelectedAgent((prev) => (prev ? { ...prev, messages: [welcome] } : prev));
 
       const savedMessages = getStorage("agentsMessages");
       if (savedMessages) {
         try {
-          savedMessages[selectedAgent.id] = [];
+          savedMessages[selectedAgent.id] = [welcome];
           setStorage("agentsMessages", savedMessages);
         } catch (e) {
           console.error("Erro ao limpar cache do agente:", e);

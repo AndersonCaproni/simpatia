@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import styles from './_typing-message.module.css'; 
-import 'katex/dist/katex.min.css';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import styles from "./_typing-message.module.css";
+import "katex/dist/katex.min.css";
 
 function TypingMessage({ content, speed = 15, onFinish, scrollRef }) {
   const [displayedText, setDisplayedText] = useState("");
@@ -13,16 +13,15 @@ function TypingMessage({ content, speed = 15, onFinish, scrollRef }) {
     let index = 0;
 
     const scrollToBottom = () => {
-      if (scrollRef && scrollRef.current) {
+      if (scrollRef?.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
     };
 
     const interval = setInterval(() => {
       if (index < content.length) {
-        setDisplayedText((prev) => prev + content.charAt(index));
         index++;
-        
+        setDisplayedText(content.substring(0, index));
         scrollToBottom();
       } else {
         clearInterval(interval);
@@ -31,7 +30,6 @@ function TypingMessage({ content, speed = 15, onFinish, scrollRef }) {
     }, speed);
 
     return () => clearInterval(interval);
-    
   }, [content, speed, onFinish, scrollRef]);
 
   return (

@@ -39,6 +39,18 @@
   max-width: 100%;
 }
 
+
+.markdownContainer pre::-webkit-scrollbar {
+  height: 6px; 
+  background-color: transparent;
+}
+
+.markdownContainer pre::-webkit-scrollbar-thumb {
+  background-color: #e4e4f2;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
 .markdownContainer pre code {
   background-color: transparent;
   color: inherit;
@@ -49,4 +61,11 @@
 /* Aumentando a especificidade */
 .message .markdownContainer pre code {
   font-size: 14px !important;
+}
+
+@media (max-width: 768px) {
+
+  .message .markdownContainer pre code {
+    font-size: 10px !important;
+  }
 }
