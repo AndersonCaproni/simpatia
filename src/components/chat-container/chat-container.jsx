@@ -4,11 +4,18 @@ import {
   PaperPlaneRight,
   Robot,
   User,
+  ClipboardText
 } from "phosphor-react";
 import { useMan } from "../../hooks/man-provider";
 import { formatDate } from "../../utils/format-date";
-import TypingMessage from "../typing-message";
+import TypingMessage from "../typing-message/typing-message";
 import styles from "./chat-container.module.css";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
+import { useState } from "react";
 
 const ChatContainer = () => {
   const {
@@ -22,10 +29,21 @@ const ChatContainer = () => {
     autoResize,
     reload,
     limparStorage,
+    isMobile,
   } = useMan();
 
-  // Proteção para o ícone
   const Icon = selectedAgent?.icon;
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopy = async (id, text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000); // reseta após 2s
+    } catch (err) {
+      console.error("Erro ao copiar:", err);
+    }
+  };
 
   return (
     <div className={styles.chatContainer}>
@@ -36,7 +54,7 @@ const ChatContainer = () => {
               {Icon && <Icon size={20} color={selectedAgent.color} />}
               <div>
                 <strong>{selectedAgent.name}</strong>
-                <p>{selectedAgent.description}</p>
+                {!isMobile && <p>{selectedAgent.description}</p>}
               </div>
             </div>
             <button className={styles.buttonTop} onClick={limparStorage}>
@@ -51,31 +69,52 @@ const ChatContainer = () => {
           <div className={styles.messages} ref={scrollRef}>
             {selectedAgent.messages.map((msg) => {
               const MessageIcon = msg.type === "user" ? User : Icon;
+              const isBot = msg.type === "bot";
+
               return (
                 <div
                   key={msg.id}
-                  className={`${styles.message} ${
-                    styles[`message${msg.type}`]
-                  }`}
+                  className={`${styles.message} ${styles[`message${msg.type}`]}`}
                   style={{
-                    backgroundColor:
-                      msg.type === "bot" ? "#f0f0f0" : selectedAgent.color,
-                    color: msg.type === "bot" ? "#000" : "#fff",
+                    backgroundColor: isBot ? "#F8F8FC" : selectedAgent.color,
+                    color: isBot ? "#000" : "#fff",
+                    position: "relative",
                   }}
                 >
-                  <div style={{ minHeight: "20px", minWidth: "20px" }}>
-                    {MessageIcon && <MessageIcon size={16} />}
-                  </div>
-                  {msg.type === "bot" &&
-                  selectedAgent?.messages[selectedAgent.messages.length - 1]
-                    .id === msg.id &&
-                  Date.now() - new Date(msg.timestamp).getTime() <= 5000 ? (
-                    <TypingMessage content={msg.content} />
+                  {isBot &&
+                    selectedAgent?.messages[selectedAgent.messages.length - 1].id === msg.id &&
+                    Date.now() - new Date(msg.timestamp).getTime() <= 5000 ? (
+                    <TypingMessage content={msg.content} scrollRef={scrollRef} />
+                  ) : isBot ? (
+                    <div className={styles.markdownContainer}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
                   ) : (
                     <>{msg.content}</>
                   )}
 
                   <small>{formatDate(msg.timestamp)}</small>
+                  {isBot &&
+                    <button
+                      className={styles.copyButton}
+                      onClick={() => handleCopy(msg.id, msg.content)}
+                      title="Copiar mensagem"
+                    >
+                      <ClipboardText
+                        size={18}
+                        color={isBot ? "#000" : "#fff"}
+                      />
+                    </button>
+                  }
+                  {copiedId === msg.id && (
+                    <span className={styles.copiedMsg}>Copiado!</span>
+                  )}
+
                 </div>
               );
             })}
@@ -110,7 +149,7 @@ const ChatContainer = () => {
                 flex: 1,
                 border: "1px solid #E4E4F2",
                 resize: "none",
-                padding: "8px 12px 0px 8px",
+                padding: "8px 12px 8px 8px",
                 outline: "none",
                 borderRadius: "8px",
                 font: "inherit",
@@ -123,6 +162,7 @@ const ChatContainer = () => {
                 overflowWrap: "break-word",
                 wordBreak: "break-word",
                 whiteSpace: "pre-wrap",
+                fontSize: isMobile ? "14px" : "15px",
               }}
             />
             <button type="submit" disabled={isLoading || !inputValue.trim()}>

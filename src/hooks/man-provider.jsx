@@ -13,7 +13,6 @@ import { ChatMensagem } from "../services/ia";
 
 const ManContext = createContext();
 
-// Agora usando localStorage no lugar de cookies
 const setStorage = (name, value) => {
   try {
     localStorage.setItem(name, JSON.stringify(value));
@@ -133,6 +132,15 @@ export const ManProvider = ({ children }) => {
   const textareaRef = useRef(null);
   const scrollRef = useRef(null);
   const [reload, setReload] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const limparStorage = () => {
     if (!selectedAgent) return;
@@ -329,6 +337,7 @@ export const ManProvider = ({ children }) => {
   return (
     <ManContext.Provider
       value={{
+        isMobile,
         value,
         setValue,
         agents,
