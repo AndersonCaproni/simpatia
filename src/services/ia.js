@@ -2,7 +2,6 @@ import axios from "axios";
 
 export async function ChatMensagem(pergunta, specialties) {
   try {
-    console.log("Pergunta enviada:", pergunta);
 
     const data = `${JSON.stringify(
       pergunta
@@ -35,7 +34,6 @@ export async function ChatMensagem(pergunta, specialties) {
 
     const respostaTexto = response.data.candidates[0].content.parts[0].text;
 
-    console.log("Resposta recebida da IA Gemini");
     return respostaTexto;
   } catch (erro) {
     console.error("Erro ao consultar Gemini:", erro);
