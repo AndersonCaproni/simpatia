@@ -12,7 +12,7 @@ jobs:
       
       - run: npm ci
       
-      - run: npm run build
+      - run: CI=false npm run build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
