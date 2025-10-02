@@ -59,13 +59,13 @@
 }
 
 /* Aumentando a especificidade */
-.message .markdownContainer pre code {
-  font-size: 14px !important;
+.markdownContainer pre code {
+  font-size: 12px !important;
 }
 
 @media (max-width: 768px) {
 
-  .message .markdownContainer pre code {
+ .markdownContainer pre code {
     font-size: 10px !important;
   }
 }
