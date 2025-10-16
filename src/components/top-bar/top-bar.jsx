@@ -46,9 +46,11 @@ const TopBar = () => {
       <img src={Logo} alt="Logo" className={styles.logo} />
 
       {!isMobile && (
-        <div className={styles.nav}>
-          <ModuleIA />
-          <Button types="outline">Sobre o Projeto</Button>
+        <>
+          <div className={styles.navInt}>
+            <ModuleIA />
+            <Button types="outline">Sobre o Projeto</Button>
+          </div>
           <Button types="top" className={styles.btn}>
             <img
               src={Unifenas}
@@ -57,7 +59,7 @@ const TopBar = () => {
             />
             Conheça a Unifenas
           </Button>
-        </div>
+</>
       )}
 
       {isMobile && (

@@ -42,21 +42,21 @@ const StyledButton = styled.button`
     }
   `
       : $types === "outline"
-      ? `
+        ? `
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
     padding: 16px 24px;
+    font-weight: 500;
+    line-height: 1.6;
     gap: 8px;
     border-radius: 8px;
     transition: 0.3s ease, background-color 0.3s ease;
     color: #7A7A99;
 
     &:hover {
-      background-color: #F8F8FC;
-      transform: scale(1.005);
-      box-shadow: 0px 4px 14px rgba(76, 75, 103, 0.2);
+      color: #006FFF;
     }
 
     /* Responsividade */
@@ -78,7 +78,7 @@ const StyledButton = styled.button`
       gap: 3px;
     }
   `
-      : ``}
+        : ``}
 `;
 
 const Button = ({ children, types, onClick, className }) => {
