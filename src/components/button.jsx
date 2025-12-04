@@ -42,12 +42,14 @@ const StyledButton = styled.button`
     }
   `
       : $types === "outline"
-      ? `
+        ? `
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
     padding: 16px 24px;
+    font-weight: 500;
+    line-height: 1.6;
     gap: 8px;
     border-radius: 8px;
     transition: 0.3s ease, background-color 0.3s ease;
@@ -77,7 +79,7 @@ const StyledButton = styled.button`
       gap: 3px;
     }
   `
-      : ``}
+        : ``}
 `;
 
 const Button = ({ children, types, onClick, className }) => {

@@ -4,6 +4,7 @@ import { useDropdown } from "../../hooks/use-dropdown";
 import Button from "../button";
 import { useEffect, useState } from "react";
 import styles from './_modules-ia.module.css'
+import NavModulos from "./nav-modulos";
 
 export default function ModuleIA() {
   const { agents, handleAgentSelect } = useMan();
@@ -34,15 +35,15 @@ export default function ModuleIA() {
               style={{
                 padding: 0,
                 display: 'flex',
-                alignItems: 'center', 
+                alignItems: 'center',
                 justifyContent: 'flex-start',
-                gap: "6px" 
+                gap: "6px"
               }}
             >
               <span style={{ lineHeight: "1" }}>Módulos de IA</span>
               <CaretDown
                 style={{
-                  width: "15px",  
+                  width: "15px",
                   height: "15px",
                   transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
                   transition: "transform 0.3s",
@@ -64,16 +65,12 @@ export default function ModuleIA() {
             Módulos de IA
             <CaretDown
               style={{
-                display: "inline-block",
-                width: "6px",
-                height: "6px",
-                borderRight: "2px solid currentColor",
-                borderBottom: "2px solid currentColor",
-                transform: isOpen ? "rotate(-135deg)" : "rotate(45deg)",
+                width: "20px",
+                height: "20px",
+                transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
                 transition: "transform 0.3s",
-                marginLeft: "4px",
+                color: "#006FFF"
               }}
-              color="#006FFF"
             />
           </Button>
       }

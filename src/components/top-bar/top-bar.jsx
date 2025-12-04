@@ -59,7 +59,7 @@ const TopBar = () => {
             />
             Conheça a Unifenas
           </Button>
-        </div>
+</>
       )}
 
       {isMobile && (
