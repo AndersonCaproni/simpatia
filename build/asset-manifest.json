@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.a65b1d9f.css",
-    "main.js": "/static/js/main.8738cbe9.js",
+    "main.css": "/static/css/main.2e868246.css",
+    "main.js": "/static/js/main.076cade1.js",
     "static/js/453.4c3552c3.chunk.js": "/static/js/453.4c3552c3.chunk.js",
     "static/media/KaTeX_AMS-Regular.ttf": "/static/media/KaTeX_AMS-Regular.853be92419a6c3766b9a.ttf",
     "static/media/KaTeX_Main-Regular.ttf": "/static/media/KaTeX_Main-Regular.9eba1d77abcf2aa6e94e.ttf",
@@ -36,7 +36,6 @@
     "static/media/KaTeX_SansSerif-Italic.woff": "/static/media/KaTeX_SansSerif-Italic.8d593cfaa96238d5e2f8.woff",
     "static/media/KaTeX_Typewriter-Regular.woff2": "/static/media/KaTeX_Typewriter-Regular.c295e7f71970f03c0549.woff2",
     "static/media/KaTeX_Fraktur-Bold.woff": "/static/media/KaTeX_Fraktur-Bold.354501bac435c3264834.woff",
-    "static/media/logo.png": "/static/media/logo.42eb495c967a2b002f1c.png",
     "static/media/KaTeX_Fraktur-Regular.woff": "/static/media/KaTeX_Fraktur-Regular.6fdf0ac577be0ba82a4c.woff",
     "static/media/KaTeX_Caligraphic-Bold.ttf": "/static/media/KaTeX_Caligraphic-Bold.7489a2fbfb9bfe704420.ttf",
     "static/media/KaTeX_Caligraphic-Regular.ttf": "/static/media/KaTeX_Caligraphic-Regular.7e873d3833eb108a0758.ttf",
@@ -65,12 +64,12 @@
     "static/media/KaTeX_Size3-Regular.woff": "/static/media/KaTeX_Size3-Regular.7947224e8a9914fa332b.woff",
     "static/media/KaTeX_Size3-Regular.woff2": "/static/media/KaTeX_Size3-Regular.e1951519f6f0596f7356.woff2",
     "index.html": "/index.html",
-    "main.a65b1d9f.css.map": "/static/css/main.a65b1d9f.css.map",
-    "main.8738cbe9.js.map": "/static/js/main.8738cbe9.js.map",
+    "main.2e868246.css.map": "/static/css/main.2e868246.css.map",
+    "main.076cade1.js.map": "/static/js/main.076cade1.js.map",
     "453.4c3552c3.chunk.js.map": "/static/js/453.4c3552c3.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a65b1d9f.css",
-    "static/js/main.8738cbe9.js"
+    "static/css/main.2e868246.css",
+    "static/js/main.076cade1.js"
   ]
 }
