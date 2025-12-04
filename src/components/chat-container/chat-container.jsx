@@ -130,12 +130,17 @@ const ChatContainer = () => {
               );
             })}
 
-            {isLoading && Icon && (
-              <div className={`${styles.messagebot} ${styles.message}`}>
-                <Icon size={16} />
-                <span>Pensando...</span>
+            {isLoading && (
+              <div className={`${styles.messagebot} ${styles.message} ${styles.loadingContainer}`}>
+                <div className={styles.typingIndicator}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <span className={styles.loadingText}>Pensando...</span>
               </div>
             )}
+
           </div>
 
           <form onSubmit={handleSubmit} className={styles.inputArea}>
@@ -198,7 +203,7 @@ const ChatContainer = () => {
                       <PaperPlaneRight size={20} />
                     )}
                   </button>
-                  <p style={{position: 'absolute', width: '90%', textAlign: 'center', bottom: '-5px', left: '50%', transform: 'translateX(-50%)', fontSize: isMobile ? '8px' : '11px'}}> A Simpatia para alunos pode cometer erros. Por isso, lembre-se de conferir as informações geradas.</p>
+                  <p style={{ position: 'absolute', width: '90%', textAlign: 'center', bottom: '-5px', left: '50%', transform: 'translateX(-50%)', fontSize: isMobile ? '8px' : '11px' }}> A Simpatia para alunos pode cometer erros. Por isso, lembre-se de conferir as informações geradas.</p>
                 </>
             }
           </form>

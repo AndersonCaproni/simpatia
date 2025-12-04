@@ -45,7 +45,7 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <img src={Logo} alt="Logo" className={styles.logo} />
+      <img src={Logo} alt="Logo" className={styles.logo} onClick={() => window.location.reload()}/>
 
       {!isMobile && (
         <div className={styles.nav}>
@@ -59,7 +59,7 @@ const TopBar = () => {
             />
             Conheça a Unifenas
           </Button>
-</>
+        </div>
       )}
 
       {isMobile && (
