@@ -41,16 +41,35 @@ export default function ModuleIA() {
               }}
             >
               <span style={{ lineHeight: "1" }}>Módulos de IA</span>
-              <CaretDown
+              <div
                 style={{
-                  width: "15px",
-                  height: "15px",
-                  transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
-                  transition: "transform 0.3s",
-                  color: "#006FFF"
+                  position: 'relative',
+                  display: 'flex',
+                  width: "20px",
+                  height: "20px",
                 }}
-                color="#006FFF"
-              />
+              >
+                <CaretDown
+                  style={{
+                    position: 'absolute',
+                    width: "20px",
+                    height: "20px",
+                    transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
+                    transition: "transform 0.3s",
+                    color: "#006FFF"
+                  }}
+                />
+                <CaretDown
+                  style={{
+                    position: 'absolute',
+                    width: "20px",
+                    height: "20px",
+                    transform: "rotate(0deg)",
+                    transition: "transform 0.3s",
+                    color: "#006FFF"
+                  }}
+                />
+              </div>
             </div>
 
           </Button>
@@ -63,15 +82,35 @@ export default function ModuleIA() {
             types="outline"
           >
             Módulos de IA
-            <CaretDown
+            <div
               style={{
+                position: 'relative',
+                display: 'flex',
                 width: "20px",
                 height: "20px",
-                transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
-                transition: "transform 0.3s",
-                color: "#006FFF"
               }}
-            />
+            >
+              <CaretDown
+                style={{
+                  position: 'absolute',
+                  width: "20px",
+                  height: "20px",
+                  transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
+                  transition: "transform 0.3s",
+                  color: "#006FFF"
+                }}
+              />
+              <CaretDown
+                style={{
+                  position: 'absolute',
+                  width: "20px",
+                  height: "20px",
+                  transform: "rotate(0deg)",
+                  transition: "transform 0.3s",
+                  color: "#006FFF"
+                }}
+              />
+            </div>
           </Button>
       }
 
