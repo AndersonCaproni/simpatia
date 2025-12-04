@@ -45,7 +45,7 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <img src={Logo} alt="Logo" className={styles.logo} onClick={() => window.location.reload()} />
+      <img src={Logo} alt="Logo" className={styles.logo} onClick={() => window.open("https://simpatiaunifenas.web.app", "_blank")} />
 
       {!isMobile && (
         <div className={styles.nav}>

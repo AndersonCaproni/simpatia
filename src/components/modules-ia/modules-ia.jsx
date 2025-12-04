@@ -40,7 +40,7 @@ export default function ModuleIA() {
                 gap: "6px"
               }}
             >
-              <span style={{ lineHeight: "1" }}>Módulos de IA</span>
+              <span style={{ lineHeight: "1" }}>Agentes de IA</span>
               <div
                 style={{
                   position: 'relative',
@@ -81,7 +81,7 @@ export default function ModuleIA() {
             }}
             types="outline"
           >
-            Módulos de IA
+            Agentes de IA
             <div
               style={{
                 position: 'relative',

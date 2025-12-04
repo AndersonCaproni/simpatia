@@ -56,7 +56,7 @@ const StyledButton = styled.button`
     color: #7A7A99;
 
     &:hover {
-      color: #272729ff;
+      color: #006FFF;
       font-weight: 600;
     }
 
