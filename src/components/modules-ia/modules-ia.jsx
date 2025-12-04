@@ -86,7 +86,7 @@ export default function ModuleIA() {
             top: "100%",
             left: "0",
             zIndex: 1000,
-            minWidth: "180px",
+            minWidth: "100%",
             backgroundColor: "#fff",
             border: "1px solid #e5e7eb",
             borderRadius: "6px",

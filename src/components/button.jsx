@@ -54,9 +54,8 @@ const StyledButton = styled.button`
     color: #7A7A99;
 
     &:hover {
-      background-color: #F8F8FC;
-      transform: scale(1.005);
-      box-shadow: 0px 4px 14px rgba(76, 75, 103, 0.2);
+      color: #272729ff;
+      font-weight: 600;
     }
 
     /* Responsividade */

@@ -4,9 +4,11 @@ import Unifenas from "../../assets/unifenas.png";
 import Button from "../button";
 import styles from "./top-bar.module.css";
 import ModuleIA from "../modules-ia/modules-ia";
+import { useNavigate } from "react-router-dom";
 
 const TopBar = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -49,7 +51,7 @@ const TopBar = () => {
         <div className={styles.nav}>
           <ModuleIA />
           <Button types="outline">Sobre o Projeto</Button>
-          <Button types="top" className={styles.btn}>
+          <Button types="top" onClick={() => window.open("https://www.unifenas.br/", "_blank")} className={styles.btn}>
             <img
               src={Unifenas}
               alt="Unifenas"
@@ -80,7 +82,7 @@ const TopBar = () => {
           <Button types="outline" className={styles.btnTop}>
             Sobre o Projeto
           </Button>
-          <Button types="top" className={styles.btn}>
+          <Button types="top" className={styles.btn} onClick={() => window.open("https://www.unifenas.br/", "_blank")} >
             <img
               src={Unifenas}
               alt="Unifenas"

@@ -7,6 +7,16 @@ import {
   Palette,
   Robot,
   Users,
+  HardDrives,
+  Cpu,
+  ChartBar,
+  Brain,
+  Briefcase,
+  GameController,
+  Microphone,
+  Scales,
+  Code,
+  Leaf,
 } from "phosphor-react";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "../services/ia";
@@ -126,6 +136,116 @@ export const ManProvider = ({ children }) => {
       specialties: ["Inteligência Artificial", "Desenvolvimento", "TI"],
       messages: [],
     },
+    {
+      id: "infrastructure",
+      name: "Infraestrutura",
+      icon: HardDrives,
+      description: "Especialista em redes, servidores, cloud e segurança da informação",
+      presentation:
+        "Olá, eu sou o Assistente de Infraestrutura, Especialista em redes, servidores, cloud computing e segurança da informação. Como posso te ajudar hoje?",
+      color: "#4B5563",
+      specialties: ["Redes", "Cloud", "DevOps", "Segurança da Informação"],
+      messages: [],
+    },
+    {
+      id: "robotics",
+      name: "Robótica",
+      icon: Cpu,
+      description: "Especialista em eletrônica, automação e controle",
+      presentation:
+        "Olá, eu sou o Assistente de Robótica, focado em automação, eletrônica e controle. Pronto para te auxiliar!",
+      color: "#0EA5E9",
+      specialties: ["Eletrônica", "Automação Industrial", "Arduino", "Robótica"],
+      messages: [],
+    },
+    {
+      id: "datascience",
+      name: "Data Science",
+      icon: ChartBar,
+      description: "Especialista em estatística, análise de dados e machine learning",
+      presentation:
+        "Olá, eu sou o Assistente de Data Science, especialista em análise de dados, estatística e machine learning. Como posso te ajudar?",
+      color: "#9333EA",
+      specialties: ["Estatística", "Machine Learning", "Python", "BI"],
+      messages: [],
+    },
+    {
+      id: "neuroscience",
+      name: "Neurociência",
+      icon: Brain,
+      description: "Especialista em funcionamento do cérebro e processos de aprendizagem",
+      presentation:
+        "Olá, eu sou o Assistente de Neurociência, focado em aprendizagem, memória e funcionamento cognitivo. Vamos aprender juntos?",
+      color: "#14B8A6",
+      specialties: ["Neuroaprendizagem", "Psicologia Cognitiva", "Memória", "Estudo Eficaz"],
+      messages: [],
+    },
+    {
+      id: "business",
+      name: "Negócios",
+      icon: Briefcase,
+      description: "Especialista em gestão, startups e inovação",
+      presentation:
+        "Olá, eu sou o Assistente de Negócios, especialista em gestão, inovação e desenvolvimento de empresas. Como posso colaborar?",
+      color: "#2563EB",
+      specialties: ["Empreendedorismo", "Marketing", "Gestão", "Finanças"],
+      messages: [],
+    },
+    {
+      id: "gamedesign",
+      name: "Game Design",
+      icon: GameController,
+      description: "Especialista em design de jogos, gamificação e engines",
+      presentation:
+        "Olá, eu sou o Assistente de Game Design, focado em criação de jogos, mecânicas e gamificação. No que posso ajudar?",
+      color: "#EC4899",
+      specialties: ["Game Design", "Unity", "Unreal", "Gamificação"],
+      messages: [],
+    },
+    {
+      id: "communication",
+      name: "Comunicação",
+      icon: Microphone,
+      description: "Especialista em oratória, retórica e mediação",
+      presentation:
+        "Olá, eu sou o Assistente de Comunicação, especializado em oratória, retórica e comunicação eficaz. Como posso contribuir?",
+      color: "#A855F7",
+      specialties: ["Oratória", "Comunicação Verbal", "Mediação", "Escrita"],
+      messages: [],
+    },
+    {
+      id: "lawexpert",
+      name: "Direito Especializado",
+      icon: Scales,
+      description: "Especialista em Direito Civil, Trabalhista e Compliance",
+      presentation:
+        "Olá, eu sou o Assistente Jurídico Especializado, pronto para auxiliar com conhecimentos em Direito Civil, Trabalhista e Compliance.",
+      color: "#7C3AED",
+      specialties: ["Direito Civil", "Direito Trabalhista", "Contratos", "Compliance"],
+      messages: [],
+    },
+    {
+      id: "softwareengineering",
+      name: "Engenharia de Software",
+      icon: Code,
+      description: "Especialista em arquitetura, padrões e boas práticas",
+      presentation:
+        "Olá, eu sou o Assistente de Engenharia de Software, focado em arquitetura, padrões e boas práticas. Como posso ajudar?",
+      color: "#1D4ED8",
+      specialties: ["Arquitetura", "Padrões de Projeto", "Clean Code", "Documentação"],
+      messages: [],
+    },
+    {
+      id: "environment",
+      name: "Sustentabilidade",
+      icon: Leaf,
+      description: "Especialista em ecologia, ESG e tecnologias verdes",
+      presentation:
+        "Olá, eu sou o Assistente de Sustentabilidade, pronto para apoiar em temas sobre ecologia, ESG e meio ambiente.",
+      color: "#16A34A",
+      specialties: ["Ecologia", "Sustentabilidade", "ESG", "Clima"],
+      messages: [],
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -147,11 +267,11 @@ export const ManProvider = ({ children }) => {
     setReload(true);
 
     const welcome = {
-        id: `bot-${Date.now()}`,
-        type: "bot",
-        content: selectedAgent?.presentation,
-        timestamp: new Date(),
-      };
+      id: `bot-${Date.now()}`,
+      type: "bot",
+      content: selectedAgent?.presentation,
+      timestamp: new Date(),
+    };
 
     setTimeout(() => {
       setAgents((prev) =>
