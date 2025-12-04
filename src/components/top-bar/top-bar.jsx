@@ -45,12 +45,12 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <img src={Logo} alt="Logo" className={styles.logo} onClick={() => window.location.reload()}/>
+      <img src={Logo} alt="Logo" className={styles.logo} onClick={() => window.location.reload()} />
 
       {!isMobile && (
         <div className={styles.nav}>
           <ModuleIA />
-          <Button types="outline">Sobre o Projeto</Button>
+          <Button types="outline" onClick={() => window.open("https://simpatiaunifenas.web.app/about", "_blank")} >Sobre o Projeto</Button>
           <Button types="top" onClick={() => window.open("https://www.unifenas.br/", "_blank")} className={styles.btn}>
             <img
               src={Unifenas}
@@ -79,7 +79,7 @@ const TopBar = () => {
       {menuOpen && isMobile && (
         <div ref={dropdownRef} className={styles.dropdown}>
           <ModuleIA />
-          <Button types="outline" className={styles.btnTop}>
+          <Button types="outline" className={styles.btnTop} onClick={() => window.open("https://simpatiaunifenas.web.app/about", "_blank")}>
             Sobre o Projeto
           </Button>
           <Button types="top" className={styles.btn} onClick={() => window.open("https://www.unifenas.br/", "_blank")} >
