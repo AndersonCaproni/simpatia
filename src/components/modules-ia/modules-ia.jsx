@@ -91,7 +91,10 @@ export default function ModuleIA() {
             marginTop: "4px",
             listStyle: "none",
             padding: "4px 0",
+            height: "300px",
+            overflowX: 'auto',
           }}
+          className={styles["menu-content"]}
         >
           {agents.map((agent) => (
             <li
