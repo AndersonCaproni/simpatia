@@ -6,8 +6,6 @@
   border-radius: 8px;
   overflow: hidden;
   font-family: Arial, sans-serif;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
 }
 
@@ -37,16 +35,25 @@
 
 .messages {
   flex: 1;
-  padding: 16px 16px 40px 16px;
+  padding: 16px 16px 0 16px;
   overflow-y: auto;
   overflow-x: hidden;
   background: transparent;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  gap: 12px;
   max-height: 100%;
   width: 100%;
+}
+
+.messagesInner {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 40px;
 }
 
 .messages::-webkit-scrollbar {
@@ -95,19 +102,16 @@
   padding: 8px 16px 24px 16px;
 }
 
-.inputArea {
-  height: auto;
+.inputAreaWrapper {
   width: 100%;
-  display: flex;
-  padding: 12px 10% 25px 12%;
   background: #fefeff;
-  align-items: end;
-  flex-shrink: 0;
-  box-sizing: border-box;
   position: relative;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
 }
 
-.inputArea::after {
+.inputAreaWrapper::after {
   content: "";
   position: absolute;
   top: -35px;
@@ -115,6 +119,18 @@
   width: 100%;
   height: 35px;
   background: linear-gradient(to top, #fefeff, rgba(254, 254, 255, 0));
+  pointer-events: none;
+}
+
+.inputArea {
+  height: auto;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  padding: 12px 16px 25px 16px;
+  align-items: end;
+  box-sizing: border-box;
+  position: relative;
 }
 
 textarea::-webkit-scrollbar {
@@ -211,7 +227,7 @@ textarea::-webkit-scrollbar-track {
 }
 
 .markdownContainer pre::-webkit-scrollbar {
-  height: 6px; 
+  height: 6px;
   background-color: transparent;
 }
 
@@ -243,7 +259,7 @@ textarea::-webkit-scrollbar-track {
   transition: 0.1 ease;
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
   height: 25px;
   width: 25px;
   min-width: 25px;
@@ -252,9 +268,8 @@ textarea::-webkit-scrollbar-track {
 
 
 .copyButton:hover {
-  background-color: #f8f8f2;
+  background-color: #e2e2e1;
   border-radius: 100%;
-  transform: scale(1.05);
 }
 
 .copiedMsg {
@@ -364,9 +379,13 @@ textarea::-webkit-scrollbar-track {
 }
 
 @keyframes bounce {
-  0%, 80%, 100% {
+
+  0%,
+  80%,
+  100% {
     transform: scale(0);
   }
+
   40% {
     transform: scale(1);
   }
