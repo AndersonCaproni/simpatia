@@ -14,11 +14,11 @@ const StyledButton = styled.button`
     padding: 16px 24px;
     gap: 16px;
     border-radius: 8px;
-    border: 1px solid #370199;
+    border: 1px solid #006FFF;
     transition: 0.3s ease;
 
     &:hover {
-      transform: scale(1.005);
+      transform: scale(1.001);
       box-shadow: 0px 4px 14px rgba(76, 75, 103, 0.2);
     }
 
@@ -48,7 +48,7 @@ const StyledButton = styled.button`
     justify-content: center;
     font-size: 16px;
     padding: 16px 24px;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.6;
     gap: 8px;
     border-radius: 8px;
@@ -57,7 +57,6 @@ const StyledButton = styled.button`
 
     &:hover {
       color: #006FFF;
-      font-weight: 600;
     }
 
     /* Responsividade */
@@ -82,9 +81,15 @@ const StyledButton = styled.button`
         : ``}
 `;
 
-const Button = ({ children, types, onClick, className }) => {
+const Button = ({ children, types, onClick, className, onMouseEnter, onMouseLeave }) => {
   return (
-    <StyledButton className={className} onClick={onClick} $types={types}>
+    <StyledButton
+      className={className}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      $types={types}
+    >
       {children}
     </StyledButton>
   );

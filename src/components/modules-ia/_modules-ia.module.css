@@ -1,12 +1,12 @@
 .btn {
-    all: unset !important;
-    border-bottom: 2px solid #006FFF !important;
-    color: #7A7A99 !important;
-    font-size: 16px !important;
-    font-weight: 500 !important;
-    line-height: 1.6 !important;
-    height: 44px !important;
-    width: 100% !important;
+  all: unset !important;
+  border-bottom: 2px solid #006FFF !important;
+  color: #7A7A99 !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  height: 44px !important;
+  width: 100% !important;
 }
 
 .menu-content:hover {
@@ -26,4 +26,52 @@
 
 .menu-content::-webkit-scrollbar-track {
   background: transparent;
+}
+
+.submenuLinks {
+  position: fixed;
+  top: 92px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+
+  background-color: var(--neutro-000);
+  border-radius: 8px;
+  box-shadow: 0 4px 32px 0 rgba(76, 75, 103, 0.08);
+
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+  pointer-events: none;
+  transition: all 1s ease;
+  z-index: 1000;
+}
+
+.submenuLinksOpen {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 950px) {
+  .submenuLinks {
+    display: none;
+  }
+
+  /* Quando aberto no mobile, não usa absolute/fixed para não quebrar o layout da tela, mas empurra o resto pra baixo */
+  .submenuLinksOpen {
+    display: flex;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin-top: 10px;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
 }
