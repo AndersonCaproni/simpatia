@@ -410,7 +410,6 @@ export const ManProvider = ({ children }) => {
       );
     } finally {
       setIsLoading(false);
-      autoResize();
     }
   };
 

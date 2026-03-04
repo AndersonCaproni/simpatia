@@ -18,7 +18,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ChatContainer = () => {
   const {
@@ -38,9 +38,27 @@ const ChatContainer = () => {
   const Icon = selectedAgent?.icon;
   const [copiedId, setCopiedId] = useState(null);
 
+  useEffect(() => {
+    if (inputValue === "" && textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  }, [inputValue, textareaRef]);
+
   const handleCopy = async (id, text) => {
     try {
-      await navigator.clipboard.writeText(text);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
@@ -161,51 +179,40 @@ const ChatContainer = () => {
                   </div>
                   :
                   <>
-                    <textarea
-                      ref={textareaRef}
-                      value={inputValue}
-                      onChange={(e) => {
-                        setInputValue(e.target.value);
-                        autoResize();
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          if (!isLoading && inputValue.trim()) {
-                            handleSubmit(e);
+                    <div className={styles.inputBox}>
+                      <textarea
+                        ref={textareaRef}
+                        value={inputValue}
+                        onChange={(e) => {
+                          setInputValue(e.target.value);
+                          autoResize();
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            if (!isLoading && inputValue.trim()) {
+                              handleSubmit(e);
+                            }
                           }
-                        }
-                      }}
-                      placeholder={`Converse com ${selectedAgent.name}...`}
-                      rows={1}
-                      style={{
-                        flex: 1,
-                        border: "1px solid #E4E4F2",
-                        resize: "none",
-                        padding: "8px 12px 8px 8px",
-                        outline: "none",
-                        borderRadius: "8px",
-                        font: "inherit",
-                        lineHeight: "24px",
-                        height: "auto",
-                        maxHeight: `${24 * 10}px`,
-                        overflowY: "hidden",
-                        boxShadow: "0px 1px 4px rgba(76, 75, 103, 0.08)",
-                        boxSizing: "border-box",
-                        overflowWrap: "break-word",
-                        wordBreak: "break-word",
-                        whiteSpace: "pre-wrap",
-                        fontSize: isMobile ? "14px" : "15px",
-                      }}
-                    />
-                    <button type="submit" disabled={isLoading || !inputValue.trim()}>
-                      {isLoading ? (
-                        <CircleNotch size={20} className={styles.spin} />
-                      ) : (
-                        <PaperPlaneRight size={20} />
-                      )}
-                    </button>
-                    <p style={{ position: 'absolute', width: '90%', textAlign: 'center', bottom: '-5px', left: '50%', transform: 'translateX(-50%)', fontSize: isMobile ? '8px' : '11px' }}> O Ajuda AI pode cometer erros. Por isso, lembre-se de conferir as informações geradas.</p>
+                        }}
+                        placeholder={`Pergunte algo ao ${selectedAgent.name}...`}
+                        rows={1}
+                        className={styles.textarea}
+                      />
+                      {
+                        (isLoading || inputValue.trim()) &&
+                        <button type="submit" className={styles.submitBtn} disabled={isLoading || !inputValue.trim()}>
+                          {isLoading ? (
+                            <CircleNotch size={18} className={styles.spin} />
+                          ) : (
+                            <PaperPlaneRight size={18} weight="fill" />
+                          )}
+                        </button>
+                      }
+                    </div>
+                    <p className={styles.disclaimer}>
+                      O Ajuda AI pode cometer erros. Por isso, lembre-se de conferir as informações geradas.
+                    </p>
                   </>
               }
             </form>
