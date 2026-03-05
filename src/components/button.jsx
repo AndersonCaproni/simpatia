@@ -18,8 +18,7 @@ const StyledButton = styled.button`
     transition: 0.3s ease;
 
     &:hover {
-      transform: scale(1.001);
-      box-shadow: 0px 4px 14px rgba(76, 75, 103, 0.2);
+      background-color: var(--neutro-200)
     }
 
     /* Responsividade */
@@ -53,7 +52,7 @@ const StyledButton = styled.button`
     gap: 8px;
     border-radius: 8px;
     transition: 0.3s ease, background-color 0.3s ease;
-    color: #7A7A99;
+    color: var(--neutro-400);
 
     &:hover {
       color: #006FFF;

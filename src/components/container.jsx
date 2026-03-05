@@ -9,7 +9,7 @@ const Container = ({ children, style }) => {
         padding: "16px",
         gap: "16px",
         flexDirection: "column",
-        backgroundColor: "#FEFEFF",
+        background: " var(--gradiente-azul-claro)",
         ...(style || {})
       }}
     >

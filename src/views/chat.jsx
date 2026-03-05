@@ -8,7 +8,7 @@ import TopBar from "../components/top-bar/top-bar";
 const Chat = () => {
   return (
     <Container>
-      <TopBar/>
+      <TopBar />
       <Container
         style={{
           flexDirection: "row",
@@ -17,7 +17,7 @@ const Chat = () => {
           padding: 0,
         }}
       >
-        <SideBar></SideBar>
+        <SideBar />
         <ChatContainer />
       </Container>
     </Container>

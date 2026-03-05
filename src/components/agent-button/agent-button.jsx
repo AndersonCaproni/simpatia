@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import style from './_agent-button.module.css'
 
 function AgentButton({ agent, isSelected, handleAgentSelect }) {
   const containerRef = useRef(null);
@@ -52,13 +53,13 @@ function AgentButton({ agent, isSelected, handleAgentSelect }) {
         boxSizing: "border-box",
         minHeight: "100px",
         padding: "10px",
-        color: isSelected ? "#fff" : "#000",
-        backgroundColor: isSelected ? agent?.color ?? "transparent" : "transparent",
         cursor: "pointer",
         border: "none",
         borderRadius: "8px",
         textAlign: "left",
+        "--agent-color": agent?.color ?? "#f8f8fc",
       }}
+      className={`${style.container} ${isSelected ? style.selected : ""}`}
       onClick={() => handleAgentSelect(agent)}
     >
       <div

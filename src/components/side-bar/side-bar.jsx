@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMan } from "../../hooks/man-provider";
-import AgentButton from "../agent-button";
+import AgentButton from "../agent-button/agent-button";
 import styles from "./side-bar.module.css";
 
 const SideBar = ({ children }) => {
@@ -13,7 +13,7 @@ const SideBar = ({ children }) => {
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <div className={styles["sidebar-header"]}>Agentes Especializados</div>
+      <div className={styles["sidebar-header"]}>Agentes {isExpanded && "Especializados"}</div>
       <div className={styles["sidebar-content"]}>
         {agents?.map((agent, index) => {
           const isSelected = selectedAgent?.id === agent.id;
@@ -25,7 +25,7 @@ const SideBar = ({ children }) => {
                 isExpanded
                   ? handleAgentSelect
                   : () => {
-                    }
+                  }
               }
               agent={agent}
             />
