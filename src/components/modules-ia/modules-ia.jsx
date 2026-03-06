@@ -7,9 +7,7 @@ import styles from './_modules-ia.module.css'
 import NavModulos from "../nav-modulos/NavModulos";
 
 export default function ModuleIA() {
-  const { agents, handleAgentSelect } = useMan();
-  const { isOpen, setIsOpen, toggle, close } = useDropdown();
-  const [isMobile, setIsMobile] = useState(false);
+  const { isOpen, toggle, close, isMobile } = useDropdown();
   const timeoutRef = useRef(null);
 
   const handleMouseEnter = () => {
@@ -22,16 +20,8 @@ export default function ModuleIA() {
     if (isMobile) return;
     timeoutRef.current = setTimeout(() => {
       close();
-    }, 400); // 600ms dá bastante tempo para cruzar a tela até o modal
+    }, 400);
   };
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 950);
-    checkMobile();
-
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   return (
     <div
@@ -59,35 +49,26 @@ export default function ModuleIA() {
               }}
             >
               <span style={{ lineHeight: "1" }}>Módulos de IA</span>
-              <div
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="8"
+                viewBox="0 0 12 8"
+                fill="none"
                 style={{
-                  position: 'relative',
-                  display: 'flex',
-                  width: "20px",
-                  height: "20px",
+                  transform: isOpen ? "rotate(+180deg)" : "rotate(0deg)",
+                  transition: "transform 0.3s",
+                  color: "#006fff"
                 }}
               >
-                <CaretDown
-                  style={{
-                    position: 'absolute',
-                    width: "20px",
-                    height: "20px",
-                    transform: isOpen ? "rotate(-180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s",
-                    color: "#006FFF"
-                  }}
+                <path
+                  d="M1 1.5L6 6.5L11 1.5"
+                  stroke="var(--azul-principal)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
-                <CaretDown
-                  style={{
-                    position: 'absolute',
-                    width: "20px",
-                    height: "20px",
-                    transform: "rotate(0deg)",
-                    transition: "transform 0.3s",
-                    color: "#006FFF"
-                  }}
-                />
-              </div>
+              </svg>
             </div>
 
           </Button>
