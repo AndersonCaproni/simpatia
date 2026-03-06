@@ -8,6 +8,8 @@ import {
   Checks,
   Microphone,
   Stop,
+  SpeakerHigh,
+  SpeakerSlash,
 } from "phosphor-react";
 import { useMan } from "../../hooks/man-provider";
 import { formatDate } from "../../utils/format-date";
@@ -18,7 +20,8 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { generateSpeech, playAudioBuffer } from "../../services/tts";
 
 const ChatContainer = () => {
   const {
@@ -42,6 +45,76 @@ const ChatContainer = () => {
 
   const Icon = selectedAgent?.icon;
   const [copiedId, setCopiedId] = useState(null);
+  const [speakingId, setSpeakingId] = useState(null);
+  const [loadingTtsId, setLoadingTtsId] = useState(null);
+  const audioSourceRef = useRef(null);
+  const audioCtxRef = useRef(null);
+
+  const stopCurrentAudio = useCallback(() => {
+    try {
+      audioSourceRef.current?.stop();
+    } catch (_) { /* já parado */ }
+    audioSourceRef.current = null;
+    if (audioCtxRef.current?.state !== "closed") {
+      audioCtxRef.current?.close();
+    }
+    audioCtxRef.current = null;
+    setSpeakingId(null);
+    setLoadingTtsId(null);
+  }, []);
+
+  // Para áudio ao trocar de agente
+  useEffect(() => {
+    stopCurrentAudio();
+  }, [selectedAgent?.id, stopCurrentAudio]);
+
+  const stripMarkdown = (text) =>
+    text
+      .replace(/```[\s\S]*?```/g, "bloco de código.")
+      .replace(/`[^`]+`/g, "")
+      .replace(/#{1,6}\s/g, "")
+      .replace(/\*\*(.+?)\*\*/g, "$1")
+      .replace(/\*(.+?)\*/g, "$1")
+      .replace(/\[(.+?)\]\(.+?\)/g, "$1")
+      .replace(/[-*+]\s/g, "")
+      .replace(/\n{2,}/g, ". ")
+      .replace(/\n/g, " ")
+      .trim();
+
+  const handleSpeak = async (id, text) => {
+    // Se já está tocando este — para
+    if (speakingId === id || loadingTtsId === id) {
+      stopCurrentAudio();
+      return;
+    }
+
+    stopCurrentAudio();
+    setLoadingTtsId(id);
+
+    const plainText = stripMarkdown(text);
+
+    try {
+      // Gera áudio via Gemini AI (voz neural de alta qualidade)
+      const result = await generateSpeech(plainText, "Charon");
+      audioCtxRef.current = result.audioCtx;
+      setLoadingTtsId(null);
+      setSpeakingId(id);
+      const source = playAudioBuffer(result, () => setSpeakingId(null));
+      audioSourceRef.current = source;
+    } catch (err) {
+      console.warn("Gemini TTS falhou, usando voz do browser:", err);
+      // Fallback: voz do browser
+      setLoadingTtsId(null);
+      const utterance = new SpeechSynthesisUtterance(plainText);
+      utterance.lang = "pt-BR";
+      utterance.rate = 0.92;
+      utterance.pitch = 0.85;
+      utterance.onend = () => setSpeakingId(null);
+      utterance.onerror = () => setSpeakingId(null);
+      setSpeakingId(id);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   useEffect(() => {
     if (inputValue === "" && textareaRef.current) {
@@ -129,26 +202,43 @@ const ChatContainer = () => {
                     )}
 
                     <small>{formatDate(msg.timestamp)}</small>
-                    {isBot &&
-                      <button
-                        className={styles.copyButton}
-                        onClick={() => handleCopy(msg.id, msg.content)}
-                        title="Copiar mensagem"
-                      >
+                    {isBot && (
+                      <div className={styles.messageActions}>
+                        {/* Botão de copiar */}
+                        <button
+                          className={styles.copyButton}
+                          onClick={() => handleCopy(msg.id, msg.content)}
+                          title="Copiar mensagem"
+                        >
+                          {copiedId === msg.id ? (
+                            <div style={{ backgroundColor: '#e8ebf0', borderRadius: '100%', minWidth: '25px', minHeight: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Checks size={18} color="#000" />
+                            </div>
+                          ) : (
+                            <ClipboardText size={18} color="#000" />
+                          )}
+                        </button>
 
-                        {copiedId === msg.id ?
-                          <div style={{ backgroundColor: '#e8ebf0', borderRadius: '100%', minWidth: '25px', minHeight: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} >
-                            <Checks size={18} color={"#000"} />
-                          </div>
-                          :
-                          <ClipboardText
-                            size={18}
-                            color={isBot ? "#000" : "#fff"}
-                          />
-                        }
-
-                      </button>
-                    }
+                        {/* Botão de ler em voz alta */}
+                        <button
+                          className={`${styles.copyButton} ${speakingId === msg.id ? styles.speakingBtn : ""}`}
+                          onClick={() => handleSpeak(msg.id, msg.content)}
+                          disabled={loadingTtsId === msg.id}
+                          title={
+                            loadingTtsId === msg.id ? "Gerando áudio..." :
+                              speakingId === msg.id ? "Parar leitura" : "Ler em voz alta"
+                          }
+                        >
+                          {loadingTtsId === msg.id ? (
+                            <CircleNotch size={18} color="#888" className={styles.spin} />
+                          ) : speakingId === msg.id ? (
+                            <SpeakerSlash size={18} color="#ef4444" />
+                          ) : (
+                            <SpeakerHigh size={18} color="#000" />
+                          )}
+                        </button>
+                      </div>
+                    )}
 
                   </div>
                 );

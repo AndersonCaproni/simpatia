@@ -395,11 +395,8 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  position: absolute;
-  bottom: -14px;
-  left: 12px;
   padding: 4px;
-  transition: 0.1 ease;
+  transition: background-color 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -407,12 +404,36 @@
   width: 25px;
   min-width: 25px;
   min-height: 25px;
+  border-radius: 100%;
 }
-
 
 .copyButton:hover {
   background-color: #e2e2e1;
-  border-radius: 100%;
+}
+
+.messageActions {
+  position: absolute;
+  bottom: -14px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.speakingBtn {
+  animation: speakPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes speakPulse {
+
+  0%,
+  100% {
+    background-color: transparent;
+  }
+
+  50% {
+    background-color: #fee2e2;
+  }
 }
 
 .copiedMsg {
