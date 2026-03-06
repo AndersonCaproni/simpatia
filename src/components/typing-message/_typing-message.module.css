@@ -63,7 +63,7 @@
   font-size: 12px !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
 
  .markdownContainer pre code {
     font-size: 10px !important;

@@ -256,7 +256,7 @@ export const ManProvider = ({ children }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 950);
     checkMobile();
 
     window.addEventListener("resize", checkMobile);

@@ -65,7 +65,7 @@
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
   .sidebar {
     left: 16px;
     bottom: 16px;

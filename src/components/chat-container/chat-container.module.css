@@ -23,7 +23,7 @@
 .chatHeaderTitle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
   width: auto;
   box-sizing: border-box;
 }
@@ -360,7 +360,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
 
   .message .markdownContainer pre code {
     font-size: 10px !important;
@@ -382,12 +382,23 @@
     font-size: 11px;
   }
 
+  .buttonTop {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: #006fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
   .message small {
     font-size: 8px;
   }
 
   .inputArea {
-    padding: 12px 16px 20px 16px;
+    padding: 12px 26px;
   }
 
   .inputBox {

@@ -82,7 +82,7 @@ const ChatContainer = () => {
               selectedAgent?.messages?.length <= 11 &&
               <button className={styles.buttonTop} onClick={limparStorage}>
                 <ArrowsCounterClockwise
-                  size={20}
+                  size={isMobile ? 16 : 20}
                   color="white"
                   className={reload ? styles.spinTop : ""}
                 />
