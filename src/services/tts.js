@@ -6,7 +6,7 @@ import axios from "axios";
  *
  * Vozes masculinas disponíveis: Charon (grave/sério), Fenrir (animado), Puck (descontraído)
  */
-export async function generateSpeech(text, voiceName = "Charon") {
+export async function generateSpeech(text, voiceName = "Charon", existingAudioCtx = null) {
     const response = await axios.post(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent",
         {
@@ -33,6 +33,8 @@ export async function generateSpeech(text, voiceName = "Charon") {
         }
     );
 
+    console.log(response.data);
+
     const part = response.data?.candidates?.[0]?.content?.parts?.[0];
     if (!part?.inlineData?.data) throw new Error("Resposta de áudio inválida");
 
@@ -45,34 +47,83 @@ export async function generateSpeech(text, voiceName = "Charon") {
     const view = new Uint8Array(buffer);
     for (let i = 0; i < binary.length; i++) view[i] = binary.charCodeAt(i);
 
-    const audioCtx = new AudioContext();
+    const audioCtx = existingAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
 
-    // Gemini retorna PCM 16-bit (L16) a 24kHz — decodifica manualmente
+    // Gemini retorna PCM 16-bit (L16) a 24kHz — precisamos encodar em WAV
     if (mimeType.includes("L16") || mimeType.includes("pcm")) {
         const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)?.[1] || "24000");
-        const samples = new Int16Array(buffer);
-        const audioBuffer = audioCtx.createBuffer(1, samples.length, sampleRate);
-        const channel = audioBuffer.getChannelData(0);
-        for (let i = 0; i < samples.length; i++) {
-            channel[i] = samples[i] / 32768.0;
-        }
-        return { audioCtx, audioBuffer };
+        const wavBlob = encodeWAV(buffer, sampleRate);
+        const url = URL.createObjectURL(wavBlob);
+        return { type: "html5", url };
     }
 
-    // Fallback para outros formatos (mp3, wav…)
-    const decoded = await audioCtx.decodeAudioData(buffer);
-    return { audioCtx, audioBuffer: decoded };
+    // Fallback se vier algum outro formato mp3/wav
+    const url = URL.createObjectURL(new Blob([buffer], { type: mimeType }));
+    return { type: "html5", url };
+}
+
+// Cria o cabeçalho WAV para um buffer de raw PCM
+function encodeWAV(pcmBuffer, sampleRate) {
+    const pcmData = new Uint8Array(pcmBuffer);
+    const wavHeader = new ArrayBuffer(44);
+    const view = new DataView(wavHeader);
+
+    // RIFF identifier
+    writeString(view, 0, 'RIFF');
+    // file length
+    view.setUint32(4, 36 + pcmData.length, true);
+    // RIFF type
+    writeString(view, 8, 'WAVE');
+    // format chunk identifier
+    writeString(view, 12, 'fmt ');
+    // format chunk length
+    view.setUint32(16, 16, true);
+    // sample format (raw)
+    view.setUint16(20, 1, true);
+    // channel count
+    view.setUint16(22, 1, true);
+    // sample rate
+    view.setUint32(24, sampleRate, true);
+    // byte rate (sample rate * block align)
+    view.setUint32(28, sampleRate * 2, true);
+    // block align (channel count * bytes per sample)
+    view.setUint16(32, 2, true);
+    // bits per sample
+    view.setUint16(34, 16, true);
+    // data chunk identifier
+    writeString(view, 36, 'data');
+    // data chunk length
+    view.setUint32(40, pcmData.length, true);
+
+    return new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+}
+
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
 }
 
 /**
- * Toca um AudioBuffer retornado por generateSpeech.
- * Retorna o AudioBufferSourceNode (para poder parar com .stop())
+ * Toca um URL de áudio.
  */
-export function playAudioBuffer({ audioCtx, audioBuffer }, onEnd) {
-    const source = audioCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioCtx.destination);
-    if (onEnd) source.onended = onEnd;
-    source.start();
-    return source;
+export function playAudioObject(url, onEnd, existingAudioRef) {
+    const audio = existingAudioRef && existingAudioRef.current ? existingAudioRef.current : new Audio();
+    audio.src = url;
+    
+    // Configura evento de fim
+    audio.onended = () => {
+        if (onEnd) onEnd();
+        URL.revokeObjectURL(url); // libera memória
+    };
+    audio.onerror = () => {
+        if (onEnd) onEnd();
+        URL.revokeObjectURL(url);
+    };
+
+    audio.play().catch(e => {
+        console.warn("HTML5 audio play falhou:", e);
+        if (onEnd) onEnd();
+    });
+    return audio;
 }

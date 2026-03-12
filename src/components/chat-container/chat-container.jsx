@@ -21,7 +21,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { generateSpeech, playAudioBuffer } from "../../services/tts";
+import { generateSpeech, playAudioObject } from "../../services/tts";
 
 const ChatContainer = () => {
   const {
@@ -47,18 +47,15 @@ const ChatContainer = () => {
   const [copiedId, setCopiedId] = useState(null);
   const [speakingId, setSpeakingId] = useState(null);
   const [loadingTtsId, setLoadingTtsId] = useState(null);
-  const audioSourceRef = useRef(null);
-  const audioCtxRef = useRef(null);
+  const audioElementRef = useRef(null);
 
   const stopCurrentAudio = useCallback(() => {
     try {
-      audioSourceRef.current?.stop();
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.currentTime = 0;
+      }
     } catch (_) { /* já parado */ }
-    audioSourceRef.current = null;
-    if (audioCtxRef.current?.state !== "closed") {
-      audioCtxRef.current?.close();
-    }
-    audioCtxRef.current = null;
     setSpeakingId(null);
     setLoadingTtsId(null);
   }, []);
@@ -91,16 +88,28 @@ const ChatContainer = () => {
     stopCurrentAudio();
     setLoadingTtsId(id);
 
+    // CRUCIAL: Autorizando o elemento `<audio>` de forma síncrona com o clique do usuário!
+    if (!audioElementRef.current) {
+      audioElementRef.current = new Audio();
+    }
+    
+    // Tocar silenciosamente para quebrar a recusa de áudio do Mobile
+    const emptySrc = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+    audioElementRef.current.src = emptySrc;
+    audioElementRef.current.play().catch(() => {});
+
     const plainText = stripMarkdown(text);
 
     try {
+      throw new Error("Erro ao gerar áudio");
       // Gera áudio via Gemini AI (voz neural de alta qualidade)
       const result = await generateSpeech(plainText, "Charon");
-      audioCtxRef.current = result.audioCtx;
-      setLoadingTtsId(null);
-      setSpeakingId(id);
-      const source = playAudioBuffer(result, () => setSpeakingId(null));
-      audioSourceRef.current = source;
+      if (result && result.url) {
+        setLoadingTtsId(null);
+        setSpeakingId(id);
+        const source = playAudioObject(result.url, () => setSpeakingId(null), audioElementRef);
+        audioElementRef.current = source;
+      }
     } catch (err) {
       console.warn("Gemini TTS falhou, usando voz do browser:", err);
       // Fallback: voz do browser
