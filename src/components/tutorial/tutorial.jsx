@@ -4,7 +4,7 @@ import { useMan } from "../../hooks/man-provider";
 
 const steps = [
   {
-    target: null, // Modal central
+    target: null,
     title: "Bem-vindo ao Ajuda AI!",
     content: "Preparei um tour rápido para você conhecer todas as incríveis funcionalidades da nossa plataforma. Vamos lá?",
   },
@@ -46,7 +46,7 @@ const steps = [
 ];
 
 const Tutorial = () => {
-  const { isMobile, isTutorialActive, setIsTutorialActive, selectedAgent, agents, handleAgentSelect, setIsExpanded } = useMan();
+  const { isMobile, isTutorialActive, setIsTutorialActive, selectedAgent, agents, handleAgentSelect, setIsExpanded, endTutorial, startTutorial } = useMan();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [targetRect, setTargetRect] = useState(null);
@@ -56,7 +56,7 @@ const Tutorial = () => {
     if (isTutorialActive) {
       setCurrentStep(0);
       setIsVisible(true);
-      setIsTutorialActive(false); // consume
+      setIsTutorialActive(false);
     }
   }, [isTutorialActive, setIsTutorialActive]);
 
@@ -64,23 +64,14 @@ const Tutorial = () => {
     // Show if it's the first time
     const hasSeen = localStorage.getItem("hasSeenTutorial");
     if (!hasSeen) {
-      setIsVisible(true);
+      startTutorial();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    // Auto-select agent se o tutorial iniciou (necessário para o chat aparecer)
-    if (isVisible && !selectedAgent && agents.length > 0) {
-      handleAgentSelect(agents[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVisible, selectedAgent]);
-
-  // Handle Mobile Sidebar Drawer for early Steps
-  useEffect(() => {
     if (!isVisible || !isMobile) return;
     
-    // Step 1 is "Especialistas em IA" which targets "#sidebar-agents"
     if (currentStep === 1) {
       setIsExpanded(true);
     } else {
@@ -91,8 +82,7 @@ const Tutorial = () => {
   const completeTutorial = () => {
     localStorage.setItem("hasSeenTutorial", "true");
     setIsVisible(false);
-    setIsTutorialActive(false);
-    setIsExpanded(false);
+    endTutorial();
   };
 
   const nextStep = () => {
@@ -112,15 +102,12 @@ const Tutorial = () => {
   const calculatePosition = useCallback(() => {
     if (!isVisible) return;
 
-    // Step targets
     const step = steps[currentStep];
     if (!step.target) {
       setTargetRect(null);
       return;
     }
 
-    // Attempt to find element
-    // Special wait for .last-bot-message-actions if it's not rendered yet because of typing animation
     const tryFind = (retries) => {
       const element = document.querySelector(step.target);
       if (element) {
@@ -147,7 +134,7 @@ const Tutorial = () => {
       }
     };
 
-    tryFind(3); // Tenta 3 vezes (útil para carregar o modal)
+    tryFind(3);
   }, [currentStep, isVisible]);
 
   useEffect(() => {
@@ -161,10 +148,8 @@ const Tutorial = () => {
   const stepInfo = steps[currentStep];
   const isCenter = !stepInfo.target || !targetRect;
 
-  // Limitar coordenadas do buraco (hole clip-path)
   let clipPath = "none";
   if (targetRect && !isCenter) {
-    // Math.max evita valores negativos que quebram o clip-path
     const holeTop = Math.max(0, targetRect.top - 5);
     const holeLeft = Math.max(0, targetRect.left - 5);
     const holeRight = targetRect.left + targetRect.width + 5;
@@ -182,19 +167,17 @@ const Tutorial = () => {
     )`;
   }
 
-  // Montando estilos
   const overlayStyle = isCenter ? {} : { clipPath };
 
   let tooltipStyle = {};
   if (!isCenter && targetRect) {
-    const tooltipWidth = 300; // baseado no CSS
-    const tooltipHeight = 200; // altura aproximada
+    const tooltipWidth = 300;
+    const tooltipHeight = 200;
     const padding = 20;
 
     let preTop = targetRect.top;
     let preLeft = targetRect.left;
 
-    // Basic dynamic placement
     if (stepInfo.position === "right") {
       preTop = targetRect.top;
       preLeft = targetRect.left + targetRect.width + 15;
@@ -233,22 +216,17 @@ const Tutorial = () => {
       preLeft = targetRect.left;
     }
 
-    // Viewport clamping (importante para o Mobile não jogar o modal para fora)
     const vw = window.innerWidth;
-    const vh = window.innerHeight + window.scrollY; // Considerar scroll
+    const vh = window.innerHeight + window.scrollY;
     
-    // Limites horizontais
     if (preLeft + tooltipWidth > vw - padding) preLeft = vw - tooltipWidth - padding;
     if (preLeft < padding) preLeft = padding;
 
-    // Limites verticais
     if (preTop + tooltipHeight > vh - padding) preTop = vh - tooltipHeight - padding;
     if (preTop < padding) preTop = padding;
 
     tooltipStyle = { top: preTop, left: preLeft };
     if (isMobile) {
-      // Remover a restrição `right: padding` que estava esticando e causando bugs,
-      // pois ajustamos a largura para 85% via CSS.
       tooltipStyle.width = "85%";
       tooltipStyle.left = "50%";
       tooltipStyle.transform = "translateX(-50%)";
@@ -257,7 +235,6 @@ const Tutorial = () => {
 
   return (
     <div className={styles.tutorialWrapper}>
-      {/* Blocker invisível para impedir cliques no "furo" da tela */}
       <div className={styles.clickBlocker} />
       
       <div

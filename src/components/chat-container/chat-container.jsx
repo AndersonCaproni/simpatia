@@ -63,7 +63,6 @@ const ChatContainer = () => {
     setLoadingTtsId(null);
   }, []);
 
-  // Para áudio ao trocar de agente
   useEffect(() => {
     stopCurrentAudio();
   }, [selectedAgent?.id, stopCurrentAudio]);
@@ -82,7 +81,6 @@ const ChatContainer = () => {
       .trim();
 
   const handleSpeak = async (id, text) => {
-    // Se já está tocando este — para
     if (speakingId === id || loadingTtsId === id) {
       stopCurrentAudio();
       return;
@@ -91,12 +89,10 @@ const ChatContainer = () => {
     stopCurrentAudio();
     setLoadingTtsId(id);
 
-    // CRUCIAL: Autorizando o elemento `<audio>` de forma síncrona com o clique do usuário!
     if (!audioElementRef.current) {
       audioElementRef.current = new Audio();
     }
     
-    // Tocar silenciosamente para quebrar a recusa de áudio do Mobile
     const emptySrc = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
     audioElementRef.current.src = emptySrc;
     audioElementRef.current.play().catch(() => {});
@@ -104,7 +100,6 @@ const ChatContainer = () => {
     const plainText = stripMarkdown(text);
 
     try {
-      // Gera áudio via Gemini AI (voz neural de alta qualidade)
       const result = await generateSpeech(plainText, "Charon");
       if (result && result.url) {
         setLoadingTtsId(null);
@@ -114,7 +109,6 @@ const ChatContainer = () => {
       }
     } catch (err) {
       console.warn("Gemini TTS falhou, usando voz do browser:", err);
-      // Fallback: voz do browser
       setLoadingTtsId(null);
       const utterance = new SpeechSynthesisUtterance(plainText);
       utterance.lang = "pt-BR";
@@ -220,7 +214,6 @@ const ChatContainer = () => {
                            selectedAgent?.messages[selectedAgent.messages.length - 1].id === msg.id ? "last-bot-message-actions" : ""
                          }`}
                       >
-                        {/* Botão de copiar */}
                         <button
                           className={styles.copyButton}
                           onClick={() => handleCopy(msg.id, msg.content)}
@@ -235,7 +228,6 @@ const ChatContainer = () => {
                           )}
                         </button>
 
-                        {/* Botão de ler em voz alta */}
                         <button
                           className={`${styles.copyButton} ${speakingId === msg.id ? styles.speakingBtn : ""}`}
                           onClick={() => handleSpeak(msg.id, msg.content)}
@@ -318,7 +310,6 @@ const ChatContainer = () => {
                           }`}
                       />
 
-                      {/* Botão de mic: aparece quando vazio OU quando está gravando/transcrevendo */}
                       {(!inputValue.trim() || isRecording || isTranscribing) && !isLoading && (
                         <button
                           id="mic-button"
@@ -340,7 +331,6 @@ const ChatContainer = () => {
                         </button>
                       )}
 
-                      {/* Botão de enviar: só aparece quando há texto E não está gravando */}
                       {!isRecording && !isTranscribing && (isLoading || inputValue.trim()) && (
                         <button type="submit" className={styles.submitBtn} disabled={isLoading || !inputValue.trim()}>
                           {isLoading ? (

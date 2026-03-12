@@ -257,11 +257,52 @@ export const ManProvider = ({ children }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isTutorialActive, setIsTutorialActive] = useState(false);
+  const [backupState, setBackupState] = useState(null);
   const recognitionRef = useRef(null);
 
+  const tutorialAgent = {
+    id: "tutorial-ghost",
+    name: "Guia do Tutorial",
+    icon: Robot,
+    description: "Seu guia para aprender a usar a plataforma.",
+    presentation: "Olá! Eu sou o seu Guia. Vou te mostrar como funciona o chat. Repare nos botões abaixo da minha mensagem!",
+    color: "#6B7280",
+    specialties: ["Tutorial"],
+    messages: [
+      {
+        id: "msg-tutorial-initial",
+        type: "bot",
+        content: "Olá! Eu sou o seu Guia. Vou te mostrar como funciona o chat. Repare nos botões abaixo da minha mensagem!",
+        timestamp: new Date()
+      }
+    ],
+  };
+
   const startTutorial = () => {
+    setBackupState({
+      agent: selectedAgent,
+      input: inputValue,
+      isExpanded: isExpanded
+    });
+    
+    setInputValue("");
+    setSelectedAgent(tutorialAgent);
+    
     setIsTutorialActive(true);
-    setIsExpanded(false); // fecha o menu no mobile ao iniciar
+    setIsExpanded(false);
+  };
+
+  const endTutorial = () => {
+    setIsTutorialActive(false);
+    setIsExpanded(false);
+    
+    if (backupState) {
+      setSelectedAgent(backupState.agent);
+      setInputValue(backupState.input);
+      setBackupState(null);
+    } else {
+      setSelectedAgent(null);
+    }
   };
 
   useEffect(() => {
@@ -336,7 +377,6 @@ export const ManProvider = ({ children }) => {
       return;
     }
 
-    // Reseta estado a cada nova gravação
     transcriptRef.current = "";
     submittedRef.current = false;
 
@@ -351,7 +391,6 @@ export const ManProvider = ({ children }) => {
       setIsTranscribing(false);
     };
 
-    // Acumula resultados mas não exibe no input (evita botão de envio piscar)
     recognition.onresult = (event) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
@@ -361,7 +400,7 @@ export const ManProvider = ({ children }) => {
     };
 
     recognition.onerror = (event) => {
-      if (event.error === "no-speech") return; // silêncio prolongado — ignorar
+      if (event.error === "no-speech") return;
       console.error("Erro no reconhecimento de voz:", event.error);
       setIsRecording(false);
       setIsTranscribing(false);
@@ -370,7 +409,6 @@ export const ManProvider = ({ children }) => {
     };
 
     recognition.onend = () => {
-      // Captura e limpa imediatamente — impede segundo onend de submeter de novo
       const finalText = transcriptRef.current.trim();
       transcriptRef.current = "";
 
@@ -378,7 +416,6 @@ export const ManProvider = ({ children }) => {
       setIsTranscribing(false);
       recognitionRef.current = null;
 
-      // Guard: uma única submissão por sessão de gravação
       if (finalText && !submittedRef.current) {
         submittedRef.current = true;
         setTimeout(() => {
@@ -396,7 +433,7 @@ export const ManProvider = ({ children }) => {
     setIsRecording(false);
     setIsTranscribing(true);
     if (recognitionRef.current) {
-      recognitionRef.current.stop(); // dispara onend
+      recognitionRef.current.stop();
     }
   }, []);
 
@@ -408,7 +445,6 @@ export const ManProvider = ({ children }) => {
     const textToSend = overrideValue ?? inputValue;
     if (!selectedAgent || !textToSend.trim()) return;
 
-    // Força scroll ao fundo quando o usuario envia — mesmo que tenha voltado para ler historico
     isAtBottomRef.current = true;
 
     const agentId = selectedAgent.id;
@@ -516,15 +552,12 @@ export const ManProvider = ({ children }) => {
     textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
   };
 
-  // Rastreia se o usuario esta proximo do fundo
   const isAtBottomRef = useRef(true);
 
-  // Para auto-scroll imediatamente ao primeiro gesto de scroll do usuario
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
-    // wheel/touch: pausa imediatamente, sem esperar distancia
     const handleUserScrollIntent = (e) => {
       const isScrollingUp =
         (e.type === "wheel" && e.deltaY < 0) ||
@@ -534,7 +567,6 @@ export const ManProvider = ({ children }) => {
       }
     };
 
-    // scroll: reativa quando o usuario volta ao fundo manualmente
     const handleScrollPosition = () => {
       const threshold = 40;
       const distanceFromBottom =
@@ -555,7 +587,6 @@ export const ManProvider = ({ children }) => {
     };
   }, [selectedAgent?.id]);
 
-  // Auto-scroll apenas se o usuario ja estava no fundo
   useEffect(() => {
     if (scrollRef.current && isAtBottomRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -623,6 +654,7 @@ export const ManProvider = ({ children }) => {
         isTutorialActive,
         setIsTutorialActive,
         startTutorial,
+        endTutorial,
       }}
     >
       {children}

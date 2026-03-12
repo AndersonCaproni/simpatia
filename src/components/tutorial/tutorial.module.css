@@ -15,7 +15,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
-  pointer-events: none; /* Deixa o blocker lidar com os cliques */
+  pointer-events: none;
   transition: clip-path 0.4s ease-in-out;
 }
 
@@ -26,7 +26,7 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  pointer-events: auto; /* Bloqueia todos os cliques na tela inteira, inclusive no buraco */
+  pointer-events: auto;
 }
 
 .overlaySolid {
