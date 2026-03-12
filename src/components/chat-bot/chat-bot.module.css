@@ -1,0 +1,614 @@
+.container {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  height: 800px;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 6px;
+  box-sizing: border-box;
+  background-color: #d9e3f0;
+  border-radius: 30px 30px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px #006FFF;
+  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 999;
+  overflow: hidden;
+}
+
+.closed {
+  transform: translateX(900px);
+}
+
+.open {
+  transform: translateX(10px);
+}
+
+.chatHeader {
+  padding: 18px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chatHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: auto;
+  box-sizing: border-box;
+}
+
+.chatHeader p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.messages {
+  flex: 1;
+  padding: 16px 16px 0 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-height: 100%;
+  width: 100%;
+}
+
+.messagesInner {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 40px;
+}
+
+.messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: #e4e4f2;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message {
+  max-width: 70%;
+  min-width: 70px;
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  word-break: break-word;
+  font-size: 14px;
+}
+
+.message small {
+  font-size: 10px;
+  position: absolute;
+  bottom: -14px;
+  right: 6px;
+  color: #666;
+}
+
+.messageuser {
+  margin-left: auto;
+  border-radius: 8px 8px 0px 8px;
+  padding: 8px 12px;
+}
+
+.messagebot {
+  margin-right: auto;
+  border-radius: 8px 8px 8px 0px;
+  padding: 8px 16px 24px 16px;
+}
+
+.inputAreaWrapper {
+  width: 100%;
+  background: #fefeff;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.inputAreaWrapper::after {
+  content: "";
+  position: absolute;
+  top: -35px;
+  left: 0;
+  width: 100%;
+  height: 35px;
+  background: linear-gradient(to top, #fefeff, rgba(254, 254, 255, 0));
+  pointer-events: none;
+}
+
+.inputArea {
+  height: auto;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 20px 16px;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+  gap: 8px;
+}
+
+.inputBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #f4f4f4;
+  border: 1px solid transparent;
+  border-radius: 36px;
+  padding: 8px 8px 8px 16px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.inputBox:focus-within {
+  background-color: #ffffff;
+  border-color: #dcdcdc;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  resize: none;
+  outline: none;
+  font: inherit;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--neutro-700);
+  box-sizing: border-box;
+  min-height: 24px;
+  max-height: 240px;
+  height: 24px;
+  overflow-y: hidden;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.textarea::placeholder {
+  color: var(--neutro-400);
+}
+
+.textarea::-webkit-scrollbar {
+  width: 4px;
+  cursor: pointer;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background: var(--neutro-300);
+  border-radius: 4px;
+}
+
+.textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.submitBtn {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--azul-principal);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: var(--azul-escuro-03);
+  transform: scale(1.05);
+}
+
+.submitBtn:disabled {
+  background-color: var(--neutro-300);
+  color: var(--neutro-100);
+  cursor: not-allowed;
+}
+
+.micBtn {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: var(--neutro-600, #444);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.micBtn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+.micBtn:disabled {
+  background-color: transparent;
+  color: var(--neutro-300, #ccc);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.micBtnRecording {
+  background-color: #ef4444;
+  color: white;
+  animation: micPulse 1.5s ease-in-out infinite;
+}
+
+.micBtnRecording:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.pulseDot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  border: 2px solid white;
+  animation: pulseDotAnim 1.2s ease-in-out infinite;
+}
+
+.textareaDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disclaimer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--neutro-400);
+  margin: 0;
+  width: 100%;
+}
+
+.emptyChat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: var(--neutro-400);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.spinTop {
+  animation: spinTop 1s linear infinite reverse;
+}
+
+@keyframes micPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes pulseDotAnim {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.7);
+  }
+}
+
+.buttonTop {
+  all: unset;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background-color: #006fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.markdownContainer {
+  max-width: 100%;
+  font-size: 14px !important;
+}
+
+.markdownContainer p,
+.markdownContainer ul,
+.markdownContainer ol,
+.markdownContainer h1,
+.markdownContainer h2,
+.markdownContainer h3,
+.markdownContainer pre {
+  margin-bottom: 1em;
+}
+
+.markdownContainer *:last-child {
+  margin-bottom: 0;
+}
+
+.markdownContainer pre {
+  background-color: #2d2d2d;
+  color: #f8f8f2;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre;
+  max-width: 100%;
+}
+
+.markdownContainer pre::-webkit-scrollbar {
+  height: 6px;
+  background-color: transparent;
+}
+
+.markdownContainer pre::-webkit-scrollbar-thumb {
+  background-color: #e4e4f2;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.markdownContainer pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: 14px !important;
+}
+
+.message .markdownContainer pre code {
+  font-size: 12px !important;
+}
+
+.copyButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  border-radius: 100%;
+}
+
+.copyButton:hover {
+  background-color: #e2e2e1;
+}
+
+.messageActions {
+  position: absolute;
+  bottom: -14px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.speakingBtn {
+  animation: speakPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes speakPulse {
+
+  0%,
+  100% {
+    background-color: transparent;
+  }
+
+  50% {
+    background-color: #fee2e2;
+  }
+}
+
+.copiedMsg {
+  position: absolute;
+  bottom: -18px;
+  left: 40px;
+  font-size: 12px;
+  color: #4caf50;
+}
+
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinTop {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 950px) {
+
+  .message .markdownContainer pre code {
+    font-size: 10px !important;
+  }
+
+  .chatContainer {
+    height: calc(100dvh - 80px);
+  }
+
+  .chatHeaderTitle strong {
+    font-size: 14px;
+  }
+
+  .chatHeader {
+    padding: 10px 18px;
+  }
+
+  .chatHeader p {
+    font-size: 11px;
+  }
+
+  .buttonTop {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: #006fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .message small {
+    font-size: 8px;
+  }
+
+  .inputArea {
+    padding: 12px 26px;
+  }
+
+  .inputBox {
+    padding: 4px 8px 4px 12px;
+    border-radius: 20px;
+  }
+
+  .submitBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-left: 8px;
+  }
+
+  .micBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-left: 8px;
+  }
+
+  .textarea {
+    font-size: 14px;
+    min-height: 20px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .disclaimer {
+    font-size: 10px;
+    padding-top: 4px;
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.typingIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.typingIndicator span {
+  width: 8px;
+  height: 8px;
+  background: #4a90e2;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typingIndicator span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typingIndicator span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.typingIndicator span:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes bounce {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
+
+.loadingText {
+  font-size: 0.85rem;
+  color: #777;
+  font-style: italic;
+}

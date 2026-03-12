@@ -259,7 +259,11 @@ export const ManProvider = ({ children }) => {
   const [isTutorialActive, setIsTutorialActive] = useState(false);
   const [backupState, setBackupState] = useState(null);
   const recognitionRef = useRef(null);
+  const [isOpenChatBot, setIsOpenChatBot] = useState(true);
 
+  useEffect(() => {
+    console.log(isOpenChatBot)
+  }, [isOpenChatBot])
   const tutorialAgent = {
     id: "tutorial-ghost",
     name: "Guia do Tutorial",
@@ -284,10 +288,10 @@ export const ManProvider = ({ children }) => {
       input: inputValue,
       isExpanded: isExpanded
     });
-    
+
     setInputValue("");
     setSelectedAgent(tutorialAgent);
-    
+
     setIsTutorialActive(true);
     setIsExpanded(false);
   };
@@ -295,7 +299,7 @@ export const ManProvider = ({ children }) => {
   const endTutorial = () => {
     setIsTutorialActive(false);
     setIsExpanded(false);
-    
+
     if (backupState) {
       setSelectedAgent(backupState.agent);
       setInputValue(backupState.input);
@@ -646,6 +650,8 @@ export const ManProvider = ({ children }) => {
         limparStorage,
         isExpanded,
         setIsExpanded,
+        isOpenChatBot,
+        setIsOpenChatBot,
         isRecording,
         isTranscribing,
         startRecording,

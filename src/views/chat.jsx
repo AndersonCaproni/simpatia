@@ -1,4 +1,5 @@
 import BarraInferior from "../components/barra-inferior/barra-inferior";
+import ChatBot from "../components/chat-bot/chat-bot";
 import ChatContainer from "../components/chat-container/chat-container";
 import Container from "../components/container";
 import SideBar from "../components/side-bar/side-bar";
@@ -21,7 +22,8 @@ const Chat = () => {
         <ChatContainer />
       </Container>
       <Tutorial />
-      <BarraInferior/>
+      <BarraInferior />
+      <ChatBot />
     </Container>
   );
 };
