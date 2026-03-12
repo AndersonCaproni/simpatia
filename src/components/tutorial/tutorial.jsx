@@ -46,37 +46,53 @@ const steps = [
 ];
 
 const Tutorial = () => {
-  const { isMobile, isTutorialActive, setIsTutorialActive, selectedAgent, agents, handleAgentSelect } = useMan();
+  const { isMobile, isTutorialActive, setIsTutorialActive, selectedAgent, agents, handleAgentSelect, setIsExpanded } = useMan();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [targetRect, setTargetRect] = useState(null);
 
   useEffect(() => {
-    // Show if manually triggered OR if it's the first time
-    let shouldShow = false;
+    // Show if manually triggered
     if (isTutorialActive) {
       setCurrentStep(0);
-      shouldShow = true;
-    } else {
-      const hasSeen = localStorage.getItem("hasSeenTutorial");
-      if (!hasSeen) {
-        shouldShow = true;
-      }
+      setIsVisible(true);
+      setIsTutorialActive(false); // consume
     }
+  }, [isTutorialActive, setIsTutorialActive]);
 
-    if (shouldShow) {
-      // Auto-select agent se estivermos no desktop e não houver um para liberar o chat
-      if (!isMobile && !selectedAgent && agents.length > 0) {
-        handleAgentSelect(agents[0]);
-      }
+  useEffect(() => {
+    // Show if it's the first time
+    const hasSeen = localStorage.getItem("hasSeenTutorial");
+    if (!hasSeen) {
       setIsVisible(true);
     }
-  }, [isTutorialActive, isMobile, selectedAgent, agents, handleAgentSelect]);
+  }, []);
+
+  useEffect(() => {
+    // Auto-select agent se o tutorial iniciou (necessário para o chat aparecer)
+    if (isVisible && !selectedAgent && agents.length > 0) {
+      handleAgentSelect(agents[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible, selectedAgent]);
+
+  // Handle Mobile Sidebar Drawer for early Steps
+  useEffect(() => {
+    if (!isVisible || !isMobile) return;
+    
+    // Step 1 is "Especialistas em IA" which targets "#sidebar-agents"
+    if (currentStep === 1) {
+      setIsExpanded(true);
+    } else {
+      setIsExpanded(false);
+    }
+  }, [currentStep, isVisible, isMobile, setIsExpanded]);
 
   const completeTutorial = () => {
     localStorage.setItem("hasSeenTutorial", "true");
     setIsVisible(false);
     setIsTutorialActive(false);
+    setIsExpanded(false);
   };
 
   const nextStep = () => {
@@ -111,12 +127,18 @@ const Tutorial = () => {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setTimeout(() => {
           const rect = element.getBoundingClientRect();
-          setTargetRect({
-            top: rect.top,
-            left: rect.left,
-            width: rect.width,
-            height: rect.height
-          });
+          if (rect.width > 0 && rect.height > 0) {
+            setTargetRect({
+              top: rect.top + window.scrollY,
+              left: rect.left + window.scrollX,
+              width: rect.width,
+              height: rect.height
+            });
+          } else if (retries > 0) {
+            setTimeout(() => tryFind(retries - 1), 500);
+          } else {
+             setTargetRect(null); 
+          }
         }, 300);
       } else if (retries > 0) {
         setTimeout(() => tryFind(retries - 1), 500);
@@ -139,19 +161,29 @@ const Tutorial = () => {
   const stepInfo = steps[currentStep];
   const isCenter = !stepInfo.target || !targetRect;
 
-  // Montando estilos
-  const overlayStyle = isCenter ? {} : {
-    clipPath: `polygon(
+  // Limitar coordenadas do buraco (hole clip-path)
+  let clipPath = "none";
+  if (targetRect && !isCenter) {
+    // Math.max evita valores negativos que quebram o clip-path
+    const holeTop = Math.max(0, targetRect.top - 5);
+    const holeLeft = Math.max(0, targetRect.left - 5);
+    const holeRight = targetRect.left + targetRect.width + 5;
+    const holeBottom = targetRect.top + targetRect.height + 5;
+
+    clipPath = `polygon(
       0% 0%, 0% 100%, 
-      ${targetRect.left - 5}px 100%, 
-      ${targetRect.left - 5}px ${targetRect.top - 5}px, 
-      ${targetRect.left + targetRect.width + 5}px ${targetRect.top - 5}px, 
-      ${targetRect.left + targetRect.width + 5}px ${targetRect.top + targetRect.height + 5}px, 
-      ${targetRect.left - 5}px ${targetRect.top + targetRect.height + 5}px, 
-      ${targetRect.left - 5}px 100%, 
+      ${holeLeft}px 100%, 
+      ${holeLeft}px ${holeTop}px, 
+      ${holeRight}px ${holeTop}px, 
+      ${holeRight}px ${holeBottom}px, 
+      ${holeLeft}px ${holeBottom}px, 
+      ${holeLeft}px 100%, 
       100% 100%, 100% 0%
-    )`
-  };
+    )`;
+  }
+
+  // Montando estilos
+  const overlayStyle = isCenter ? {} : { clipPath };
 
   let tooltipStyle = {};
   if (!isCenter && targetRect) {
@@ -201,23 +233,25 @@ const Tutorial = () => {
       preLeft = targetRect.left;
     }
 
-    // Viewport clamping (evitando que vaze da tela no PC e não cubra os botoes)
-    if (!isMobile) {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+    // Viewport clamping (importante para o Mobile não jogar o modal para fora)
+    const vw = window.innerWidth;
+    const vh = window.innerHeight + window.scrollY; // Considerar scroll
+    
+    // Limites horizontais
+    if (preLeft + tooltipWidth > vw - padding) preLeft = vw - tooltipWidth - padding;
+    if (preLeft < padding) preLeft = padding;
 
-      // Limites horizontais
-      if (preLeft + tooltipWidth > vw - padding) preLeft = vw - tooltipWidth - padding;
-      if (preLeft < padding) preLeft = padding;
-
-      // Limites verticais
-      if (preTop + tooltipHeight > vh - padding) preTop = vh - tooltipHeight - padding;
-      if (preTop < padding) preTop = padding;
-    }
+    // Limites verticais
+    if (preTop + tooltipHeight > vh - padding) preTop = vh - tooltipHeight - padding;
+    if (preTop < padding) preTop = padding;
 
     tooltipStyle = { top: preTop, left: preLeft };
     if (isMobile) {
-      tooltipStyle.right = padding; // Estica no mobile
+      // Remover a restrição `right: padding` que estava esticando e causando bugs,
+      // pois ajustamos a largura para 85% via CSS.
+      tooltipStyle.width = "85%";
+      tooltipStyle.left = "50%";
+      tooltipStyle.transform = "translateX(-50%)";
     }
   }
 
