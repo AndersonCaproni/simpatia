@@ -55,6 +55,9 @@ const ChatContainer = () => {
         audioElementRef.current.pause();
         audioElementRef.current.currentTime = 0;
       }
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
     } catch (_) { /* já parado */ }
     setSpeakingId(null);
     setLoadingTtsId(null);
@@ -101,7 +104,6 @@ const ChatContainer = () => {
     const plainText = stripMarkdown(text);
 
     try {
-      throw new Error("Erro ao gerar áudio");
       // Gera áudio via Gemini AI (voz neural de alta qualidade)
       const result = await generateSpeech(plainText, "Charon");
       if (result && result.url) {
