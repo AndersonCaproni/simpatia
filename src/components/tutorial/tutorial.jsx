@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import styles from "./tutorial.module.css";
 import { useMan } from "../../hooks/man-provider";
 
+const GAP = 8;
+const RADIUS = 12;
+
 const steps = [
   {
     target: null,
@@ -46,13 +49,13 @@ const steps = [
 ];
 
 const Tutorial = () => {
-  const { isMobile, isTutorialActive, setIsTutorialActive, selectedAgent, agents, handleAgentSelect, setIsExpanded, endTutorial, startTutorial } = useMan();
+  const { isMobile, isTutorialActive, setIsTutorialActive, setIsExpanded, endTutorial, startTutorial } = useMan();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [targetRect, setTargetRect] = useState(null);
+  const [vpSize, setVpSize] = useState({ w: window.innerWidth, h: window.innerHeight });
 
   useEffect(() => {
-    // Show if manually triggered
     if (isTutorialActive) {
       setCurrentStep(0);
       setIsVisible(true);
@@ -61,22 +64,14 @@ const Tutorial = () => {
   }, [isTutorialActive, setIsTutorialActive]);
 
   useEffect(() => {
-    // Show if it's the first time
     const hasSeen = localStorage.getItem("hasSeenTutorial");
-    if (!hasSeen) {
-      startTutorial();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!hasSeen) startTutorial();
   }, []);
 
   useEffect(() => {
     if (!isVisible || !isMobile) return;
-    
-    if (currentStep === 1) {
-      setIsExpanded(true);
-    } else {
-      setIsExpanded(false);
-    }
+    if (currentStep === 1) setIsExpanded(true);
+    else setIsExpanded(false);
   }, [currentStep, isVisible, isMobile, setIsExpanded]);
 
   const completeTutorial = () => {
@@ -86,21 +81,18 @@ const Tutorial = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      completeTutorial();
-    }
+    if (currentStep < steps.length - 1) setCurrentStep(prev => prev + 1);
+    else completeTutorial();
   };
 
   const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-    }
+    if (currentStep > 0) setCurrentStep(prev => prev - 1);
   };
 
   const calculatePosition = useCallback(() => {
     if (!isVisible) return;
+
+    setVpSize({ w: window.innerWidth, h: window.innerHeight });
 
     const step = steps[currentStep];
     if (!step.target) {
@@ -116,15 +108,15 @@ const Tutorial = () => {
           const rect = element.getBoundingClientRect();
           if (rect.width > 0 && rect.height > 0) {
             setTargetRect({
-              top: rect.top + window.scrollY,
-              left: rect.left + window.scrollX,
+              top: rect.top,
+              left: rect.left,
               width: rect.width,
-              height: rect.height
+              height: rect.height,
             });
           } else if (retries > 0) {
             setTimeout(() => tryFind(retries - 1), 500);
           } else {
-             setTargetRect(null); 
+            setTargetRect(null);
           }
         }, 300);
       } else if (retries > 0) {
@@ -140,7 +132,11 @@ const Tutorial = () => {
   useEffect(() => {
     calculatePosition();
     window.addEventListener('resize', calculatePosition);
-    return () => window.removeEventListener('resize', calculatePosition);
+    window.addEventListener('scroll', calculatePosition);
+    return () => {
+      window.removeEventListener('resize', calculatePosition);
+      window.removeEventListener('scroll', calculatePosition);
+    };
   }, [calculatePosition]);
 
   if (!isVisible) return null;
@@ -148,26 +144,16 @@ const Tutorial = () => {
   const stepInfo = steps[currentStep];
   const isCenter = !stepInfo.target || !targetRect;
 
-  let clipPath = "none";
-  if (targetRect && !isCenter) {
-    const holeTop = Math.max(0, targetRect.top - 5);
-    const holeLeft = Math.max(0, targetRect.left - 5);
-    const holeRight = targetRect.left + targetRect.width + 5;
-    const holeBottom = targetRect.top + targetRect.height + 5;
-
-    clipPath = `polygon(
-      0% 0%, 0% 100%, 
-      ${holeLeft}px 100%, 
-      ${holeLeft}px ${holeTop}px, 
-      ${holeRight}px ${holeTop}px, 
-      ${holeRight}px ${holeBottom}px, 
-      ${holeLeft}px ${holeBottom}px, 
-      ${holeLeft}px 100%, 
-      100% 100%, 100% 0%
-    )`;
+  const W = vpSize.w;
+  const H = vpSize.h;
+  let svgMask = null;
+  if (!isCenter && targetRect) {
+    const hx = targetRect.left - GAP;
+    const hy = targetRect.top - GAP;
+    const hw = targetRect.width + GAP * 2;
+    const hh = targetRect.height + GAP * 2;
+    svgMask = { hx, hy, hw, hh };
   }
-
-  const overlayStyle = isCenter ? {} : { clipPath };
 
   let tooltipStyle = {};
   if (!isCenter && targetRect) {
@@ -194,7 +180,7 @@ const Tutorial = () => {
       }
     } else if (stepInfo.position === "top-left") {
       preTop = targetRect.top - tooltipHeight - 105;
-      preLeft = targetRect.left + (targetRect.width / 2.5) - (tooltipWidth);
+      preLeft = targetRect.left + (targetRect.width / 2.5) - tooltipWidth;
       if (isMobile) {
         preTop = targetRect.top - tooltipHeight - 80;
         preLeft = padding;
@@ -202,26 +188,21 @@ const Tutorial = () => {
     } else if (stepInfo.position === "bottom") {
       preTop = targetRect.top + targetRect.height + 25;
       preLeft = targetRect.left + (targetRect.width / 2) - (tooltipWidth * 1.2);
-      if (isMobile) {
-        preLeft = padding;
-      }
+      if (isMobile) preLeft = padding;
     } else if (stepInfo.position === "bottom-center") {
       preTop = targetRect.top + targetRect.height + 25;
-      preLeft = targetRect.left + (targetRect.width / 2) - (tooltipWidth / 1);
-      if (isMobile) {
-        preLeft = padding;
-      }
+      preLeft = targetRect.left + (targetRect.width / 2) - tooltipWidth;
+      if (isMobile) preLeft = padding;
     } else {
       preTop = targetRect.top + targetRect.height + 15;
       preLeft = targetRect.left;
     }
 
     const vw = window.innerWidth;
-    const vh = window.innerHeight + window.scrollY;
-    
+    const vh = window.innerHeight;
+
     if (preLeft + tooltipWidth > vw - padding) preLeft = vw - tooltipWidth - padding;
     if (preLeft < padding) preLeft = padding;
-
     if (preTop + tooltipHeight > vh - padding) preTop = vh - tooltipHeight - padding;
     if (preTop < padding) preTop = padding;
 
@@ -236,11 +217,53 @@ const Tutorial = () => {
   return (
     <div className={styles.tutorialWrapper}>
       <div className={styles.clickBlocker} />
-      
-      <div
-        className={`${styles.overlay} ${isCenter ? styles.overlaySolid : ''}`}
-        style={overlayStyle}
-      />
+
+      {isCenter ? (
+        <div className={styles.overlaySolid} />
+      ) : svgMask && (
+        <svg
+          className={styles.overlaySvg}
+          width={W}
+          height={H}
+          viewBox={`0 0 ${W} ${H}`}
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <mask id="spotlight-mask">
+              {/* Tudo branco = visível (escuro) */}
+              <rect x="0" y="0" width={W} height={H} fill="white" />
+              {/* Buraco preto = transparente (deixa ver o conteúdo) */}
+              <rect
+                x={svgMask.hx}
+                y={svgMask.hy}
+                width={svgMask.hw}
+                height={svgMask.hh}
+                rx={RADIUS}
+                ry={RADIUS}
+                fill="black"
+              />
+            </mask>
+          </defs>
+          <rect
+            x="0" y="0"
+            width={W} height={H}
+            fill="rgba(0,0,0,0.7)"
+            mask="url(#spotlight-mask)"
+          />
+          {/* Anel de highlight arredondado */}
+          <rect
+            x={svgMask.hx}
+            y={svgMask.hy}
+            width={svgMask.hw}
+            height={svgMask.hh}
+            rx={RADIUS}
+            ry={RADIUS}
+            fill="none"
+            stroke="rgba(255,255,255,0.7)"
+            strokeWidth="3"
+          />
+        </svg>
+      )}
 
       <div
         className={`${styles.tooltip} ${isCenter ? styles.tooltipCenter : styles.tooltipAbsolute}`}
@@ -249,8 +272,8 @@ const Tutorial = () => {
         <div className={styles.progressContainer}>
           <div className={styles.progressText}>Passo {currentStep + 1} de {steps.length}</div>
           <div className={styles.progressBarBg}>
-            <div 
-              className={styles.progressBarFill} 
+            <div
+              className={styles.progressBarFill}
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             />
           </div>
@@ -260,7 +283,6 @@ const Tutorial = () => {
 
         <div className={styles.actions}>
           <button className={styles.skipBtn} onClick={completeTutorial}>Pular tutorial</button>
-
           <div className={styles.navRow}>
             {currentStep > 0 && <button className={styles.navBtn} onClick={prevStep}>Anterior</button>}
             <button className={styles.nextBtn} onClick={nextStep}>
