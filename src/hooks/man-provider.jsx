@@ -261,9 +261,6 @@ export const ManProvider = ({ children }) => {
   const recognitionRef = useRef(null);
   const [isOpenChatBot, setIsOpenChatBot] = useState(true);
 
-  useEffect(() => {
-    console.log(isOpenChatBot)
-  }, [isOpenChatBot])
   const tutorialAgent = {
     id: "tutorial-ghost",
     name: "Guia do Tutorial",

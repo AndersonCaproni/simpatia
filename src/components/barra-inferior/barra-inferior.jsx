@@ -1,12 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import Logo from "../../assets/logo.svg";
-import Unifenas from "../../assets/unifenas.png";
-import { CaretUp, Robot } from "phosphor-react";
-import Button from "../button";
+import { CaretUp,  } from "phosphor-react";
 import styles from "./barra-inferior.module.css";
-import ModuleIA from "../modules-ia/modules-ia";
-import { useNavigate } from "react-router-dom";
 import { useMan } from "../../hooks/man-provider";
+import { BsRobot  } from "react-icons/bs";
+import { FaQuestion } from "react-icons/fa";
 
 const BarraInferior = () => {
   const { isMobile, startTutorial, setIsOpenChatBot } = useMan();
@@ -35,8 +32,6 @@ const BarraInferior = () => {
     };
   }, [isOpen]);
 
-  // Se for mobile, não renderiza essa barra inferior
-  if (isMobile) return null;
 
   return (
     <div
@@ -48,10 +43,10 @@ const BarraInferior = () => {
       </div>
       <div className={styles.content}>
         <button className={styles.btn} onClick={() => { setIsOpen(false); startTutorial(); }} >
-          ?
+          <FaQuestion  size={18} weight="bold" />
         </button>
         <button className={styles.btn} onClick={() => { setIsOpen(false); setIsOpenChatBot(true) }} >
-          <Robot size={18}/>
+          <BsRobot size={22} />
         </button>
       </div>
     </div>

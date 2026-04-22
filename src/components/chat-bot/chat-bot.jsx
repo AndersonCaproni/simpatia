@@ -1,4 +1,5 @@
-import { PaperPlaneRight, Robot } from "phosphor-react";
+import { PaperPlaneRight, Robot, X } from "phosphor-react";
+import { BsRobot } from "react-icons/bs";
 import { useEffect, useRef, useState } from "react";
 import { useMan } from "../../hooks/man-provider";
 import { AjudaAIMensagem } from "../../services/ia";
@@ -67,10 +68,18 @@ const ChatBot = () => {
   }, [isOpenChatBot, setIsOpenChatBot]);
 
   useEffect(() => {
+    scrollMessages()
+  }, [messages, isProcessing]);
+
+  useEffect(() => {
+    scrollMessages();
+  }, [isOpenChatBot]);
+
+  const scrollMessages = () => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
-  }, [messages, isProcessing]);
+  };
 
   useEffect(() => {
     if (input === "" && textareaChatBotRef?.current) {
@@ -108,7 +117,7 @@ const ChatBot = () => {
         ]);
 
         handleAgentSelect(agent);
-        handleSubmit({ preventDefault: () => {} }, trimmed, agent);
+        handleSubmit({ preventDefault: () => { } }, trimmed, agent);
         setTimeout(() => setIsOpenChatBot(false), 1500);
         return;
       }
@@ -147,29 +156,30 @@ const ChatBot = () => {
     }
   };
 
-  if (isMobile) return null;
-
   const showSugestoes =
     messages.length === INTRO_MESSAGES.length && !isProcessing;
 
   return (
     <div
       ref={chatRef}
-      className={`${styles.container} ${
-        isOpenChatBot ? styles.open : styles.closed
-      }`}
+      className={`${styles.container} ${isOpenChatBot ? styles.open : styles.closed
+        }`}
     >
       <header className={styles.chatHeader}>
         <div className={styles.chatHeaderTitle}>
-          <Robot size={22} color="#006FFF" weight="fill" />
-          <div>
+          <BsRobot size={22} color="#006FFF" weight="fill" />
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             <strong>Ajuda AI</strong>
-            <span style={{ display: "block", fontSize: 12, color: "#666" }}>
+            <span style={{ display: "block", fontSize: isMobile? 9 : 12, color: "#666" }}>
               Tire suas dúvidas sobre a plataforma ou seja encaminhado a um
               especialista
             </span>
           </div>
         </div>
+
+        <button className={styles.closeBtn} onClick={() => setIsOpenChatBot(false)}>
+          <X size={20} />
+        </button>
       </header>
 
       <div ref={messagesRef} className={styles.messages}>
@@ -177,19 +187,18 @@ const ChatBot = () => {
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`${styles.message} ${
-                m.type === "user" ? styles.messageuser : styles.messagebot
-              }`}
+              className={`${styles.message} ${m.type === "user" ? styles.messageuser : styles.messagebot
+                }`}
               style={
                 m.type === "user"
-                  ? { backgroundColor: "#006FFF", color: "#fff" }
+                  ? { backgroundColor: "#006FFF", color: "#fdfbfbff" }
                   : {
-                      backgroundColor: "#fff",
-                      color: "#222",
-                      borderLeft: m.agentColor
-                        ? `3px solid ${m.agentColor}`
-                        : undefined,
-                    }
+                    backgroundColor: "#fafafaff",
+                    color: "#222",
+                    borderLeft: m.agentColor
+                      ? `3px solid ${m.agentColor}`
+                      : undefined,
+                  }
               }
             >
               {m.content}
@@ -215,7 +224,6 @@ const ChatBot = () => {
           {isProcessing && (
             <div
               className={`${styles.messagebot} ${styles.message} ${styles.loadingContainer}`}
-              style={{ backgroundColor: "#fff" }}
             >
               <div className={styles.typingIndicator}>
                 <span></span>
@@ -255,8 +263,7 @@ const ChatBot = () => {
             </div>
           </div>
           <p className={styles.disclaimer}>
-            O Ajuda AI pode cometer erros. Por isso, lembre-se de conferir as
-            informações geradas.
+            O Ajuda AI pode cometer erros.
           </p>
         </form>
       </div>

@@ -27,7 +27,6 @@ export async function generateSpeech(text, voiceName = "Charon", existingAudioCt
         }
     );
 
-    console.log(response.data);
 
     const part = response.data?.candidates?.[0]?.content?.parts?.[0];
     if (!part?.inlineData?.data) throw new Error("Resposta de áudio inválida");

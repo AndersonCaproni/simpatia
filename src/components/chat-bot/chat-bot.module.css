@@ -10,7 +10,7 @@
   justify-content: flex-start;
   padding-top: 6px;
   box-sizing: border-box;
-  background-color: #d9e3f0;
+  background-color: #fefeff;
   border-radius: 30px 30px;
   border: 3px solid #fff;
   box-shadow: 0 0 0 1px #006fff;
@@ -28,6 +28,7 @@
 }
 
 .chatHeader {
+  position: relative;
   padding: 18px;
   border-bottom: 1px solid #ddd;
   display: flex;
@@ -37,10 +38,22 @@
   box-sizing: border-box;
 }
 
+.chatHeader::after {
+  content: "";
+  position: absolute;
+  bottom: -35px;
+  left: 0;
+  width: 100%;
+  height: 35px;
+  background: linear-gradient(to bottom, #fefeff, rgba(254, 254, 255, 0));
+  pointer-events: none;
+  z-index: 1;
+}
+
 .chatHeaderTitle {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   width: auto;
   box-sizing: border-box;
 }
@@ -117,7 +130,7 @@
 .messagebot {
   margin-right: auto;
   border-radius: 8px 8px 8px 0px;
-  padding: 8px 16px 24px 16px;
+  padding: 8px 12px;
 }
 
 .inputAreaWrapper {
@@ -300,6 +313,7 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 .containerBtn {
   height: 100%;
   display: flex;
@@ -334,6 +348,7 @@
 }
 
 @keyframes micPulse {
+
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
@@ -345,6 +360,7 @@
 }
 
 @keyframes pulseDotAnim {
+
   0%,
   100% {
     opacity: 1;
@@ -455,6 +471,7 @@
 }
 
 @keyframes speakPulse {
+
   0%,
   100% {
     background-color: transparent;
@@ -463,6 +480,22 @@
   50% {
     background-color: #fee2e2;
   }
+}
+
+.closeBtn {
+  all: unset;
+  cursor: pointer;
+  color: var(--neutro-600);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.closeBtn:hover {
+  background-color: var(--neutro-200);
 }
 
 .copiedMsg {
@@ -494,6 +527,37 @@
 }
 
 @media (max-width: 950px) {
+
+  .container {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    left: 15px;
+    display: flex;
+    height: calc(100dvh - 76px);
+    width: calc(100% - 30px);
+    background-color: var(--neutro-000);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+  }
+
+  .closed {
+    transform: translateY(120%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+  }
+
+  .open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+  }
+
   .message .markdownContainer pre code {
     font-size: 10px !important;
   }
@@ -562,7 +626,7 @@
   }
 
   .disclaimer {
-    font-size: 10px;
+    font-size: 9px;
     padding-top: 4px;
   }
 }
@@ -637,6 +701,7 @@
 }
 
 @keyframes bounce {
+
   0%,
   80%,
   100% {

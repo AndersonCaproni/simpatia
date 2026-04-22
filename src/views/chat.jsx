@@ -20,10 +20,10 @@ const Chat = () => {
       >
         <SideBar />
         <ChatContainer />
+        <ChatBot />
       </Container>
       <Tutorial />
       <BarraInferior />
-      <ChatBot />
     </Container>
   );
 };
